@@ -12,9 +12,9 @@ import {
 } from "@/components/ui/drawer"
 import { Button } from "@/components/ui/button"
 import { fetchLotDetails } from "@/lib/actions/lot"
-import { formatKg } from "@/lib/inventory/format-kg"
+import { formatKg, formatSignedKg } from "@/lib/inventory/format-kg"
 import { formatRelativeTime } from "@/lib/inventory/format-relative-time"
-import { formatRoute } from "@/lib/inventory/format-route"
+import { adjustmentSign, formatRoute } from "@/lib/inventory/format-route"
 import type { LotDetails } from "@/lib/inventory/lot-details"
 import { cn } from "@/lib/styles/cn"
 
@@ -140,25 +140,50 @@ export function LotDetailsDrawer({
               {details.recentMovements.length > 0 && (
                 <section>
                   <h3 className="mb-3 font-medium text-sm">
-                    Últimos movimientos
+                    Historial
                   </h3>
                   <ul className="flex flex-col gap-3">
-                    {details.recentMovements.map((movement) => (
-                      <li
-                        key={movement.id}
-                        className="rounded-2xl bg-muted/50 px-4 py-3"
-                      >
-                        <p className="font-medium tabular-nums">
-                          {formatKg(movement.quantityKg)}
-                        </p>
-                        <p className="mt-1 text-muted-foreground text-sm">
-                          {formatRoute(movement)}
-                        </p>
-                        <p className="mt-1 text-muted-foreground text-xs">
-                          {formatRelativeTime(movement.createdAt)}
-                        </p>
-                      </li>
-                    ))}
+                    {details.recentMovements.map((movement) => {
+                      const signed =
+                        movement.type === "ADJUSTMENT"
+                          ? adjustmentSign(
+                              movement.originName,
+                              movement.destinationName
+                            ) * movement.quantityKg
+                          : null
+                      const previousKg =
+                        movement.countedKg !== null && signed !== null
+                          ? movement.countedKg - signed
+                          : null
+
+                      return (
+                        <li
+                          key={movement.id}
+                          className="rounded-2xl bg-muted/50 px-4 py-3"
+                        >
+                          <p className="font-medium tabular-nums">
+                            {signed !== null
+                              ? formatSignedKg(signed)
+                              : formatKg(movement.quantityKg)}
+                          </p>
+                          <p className="mt-1 text-muted-foreground text-sm">
+                            {formatRoute(movement)}
+                          </p>
+                          {movement.type === "ADJUSTMENT" &&
+                          movement.countedKg !== null &&
+                          previousKg !== null ? (
+                            <p className="mt-1 text-muted-foreground text-xs">
+                              Conteo físico: {formatKg(movement.countedKg)}
+                              {" · "}
+                              Stock anterior: {formatKg(previousKg)}
+                            </p>
+                          ) : null}
+                          <p className="mt-1 text-muted-foreground text-xs">
+                            {formatRelativeTime(movement.createdAt)}
+                          </p>
+                        </li>
+                      )
+                    })}
                   </ul>
                 </section>
               )}

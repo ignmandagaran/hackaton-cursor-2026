@@ -5,6 +5,7 @@ import {
   locations,
   lots,
   movements,
+  stockCounts,
   varieties,
   type MovementType,
 } from "@/db/schema"
@@ -35,6 +36,7 @@ export type LotDetails = {
     originName: string | null
     destinationName: string | null
     type: MovementType
+    countedKg: number | null
   }[]
 }
 
@@ -103,6 +105,7 @@ export function getLotDetails(lotId: number): LotDetails | null {
       originName: originLocation.name,
       destinationName: destinationLocation.name,
       type: movements.type,
+      countedKg: stockCounts.quantityKg,
     })
     .from(movements)
     .leftJoin(originLocation, eq(movements.originLocationId, originLocation.id))
@@ -110,6 +113,7 @@ export function getLotDetails(lotId: number): LotDetails | null {
       destinationLocation,
       eq(movements.destinationLocationId, destinationLocation.id)
     )
+    .leftJoin(stockCounts, eq(movements.stockCountId, stockCounts.id))
     .where(eq(movements.lotId, lotId))
     .orderBy(desc(movements.createdAt), desc(movements.id))
     .limit(5)

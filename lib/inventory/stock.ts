@@ -13,6 +13,31 @@ export type CurrentStock = {
   }[]
 }
 
+export function getLocationsWithLotStock(lotId: number): {
+  locationId: number
+  locationName: string
+  quantityKg: number
+}[] {
+  const db = getDb()
+
+  const allLocations = db
+    .select()
+    .from(locations)
+    .orderBy(asc(locations.name))
+    .all()
+
+  return allLocations
+    .map((location) => ({
+      locationId: location.id,
+      locationName: location.name,
+      quantityKg: getAvailableStock({
+        lotId,
+        locationId: location.id,
+      }),
+    }))
+    .filter((entry) => entry.quantityKg > 0)
+}
+
 export function getAvailableStock({
   lotId,
   locationId,

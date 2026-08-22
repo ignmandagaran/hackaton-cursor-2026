@@ -1,13 +1,12 @@
 {
   "common": { "skipToMain": "Skip to main content" },
   "home": {
-    "title": "App",
+    "title": "Papasud Stock Control",
     "inventoryTitle": "Inventory",
     "tabOverview": "Overview",
-    "tabMovements": "Movements",
-    "tabCounts": "Counts",
-    "movementTitle": "Register movement",
-    "movementSubtitle": "Describe stock transfers in natural language",
+    "tabOperations": "Operations",
+    "movementTitle": "Register operation",
+    "movementSubtitle": "Describe a movement or count in your own words",
     "inventoryStatusTitle": "Inventory status",
     "currentStockTitle": "Stock by location",
     "discrepanciesTitle": "Discrepancies",
@@ -33,7 +32,7 @@
     "switchToDark": "Switch to dark theme"
   },
   "metadata": {
-    "title": "App",
-    "description": "A modern Next.js starter template."
+    "title": "Papasud Stock Control",
+    "description": "Seed potato stock control."
   }
 }

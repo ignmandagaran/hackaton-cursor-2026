@@ -43,7 +43,12 @@ export function validateMovement(
           requested: resolved.quantityKg,
           available: availableStock,
           lotCode: resolved.lotCode,
+          lotId: resolved.lotId,
           origin: resolved.originName,
+          originId: resolved.originId,
+          destination: resolved.destinationName,
+          destinationId: resolved.destinationId,
+          varietyName: resolved.varietyName,
         },
       },
     }

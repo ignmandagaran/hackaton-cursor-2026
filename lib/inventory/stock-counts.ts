@@ -3,6 +3,8 @@ import { getDb } from "@/db"
 import { stockCounts } from "@/db/schema"
 import { roundKg } from "@/lib/inventory/kg-tolerance"
 
+type Executor = Pick<ReturnType<typeof getDb>, "insert">
+
 export type StockCount = {
   id: number
   lotId: number
@@ -45,21 +47,23 @@ export function getLatestStockCount({
   }
 }
 
-export function createStockCount({
-  lotId,
-  locationId,
-  quantityKg,
-  notes,
-}: {
-  lotId: number
-  locationId: number
-  quantityKg: number
-  notes?: string | undefined
-}): StockCount {
-  const db = getDb()
+export function createStockCount(
+  {
+    lotId,
+    locationId,
+    quantityKg,
+    notes,
+  }: {
+    lotId: number
+    locationId: number
+    quantityKg: number
+    notes?: string | undefined
+  },
+  executor: Executor = getDb()
+): StockCount {
   const now = new Date().toISOString()
 
-  const [row] = db
+  const [row] = executor
     .insert(stockCounts)
     .values({
       lotId,

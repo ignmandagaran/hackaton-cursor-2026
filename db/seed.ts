@@ -102,7 +102,7 @@ export function seedDatabase() {
           lotId: lot224.id,
           originLocationId: null,
           destinationLocationId: frio1.id,
-          quantityKg: 1240,
+          quantityKg: 100,
           rawInput: null,
           source: "MANUAL",
           notes: "Saldo inicial demo",

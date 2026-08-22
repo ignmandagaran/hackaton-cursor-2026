@@ -45,7 +45,7 @@ export function MovementSuccessView({
       </div>
 
       <Button variant="outline" onClick={onReset}>
-        Registrar otro movimiento
+        Registrar otra operación
       </Button>
     </div>
   )

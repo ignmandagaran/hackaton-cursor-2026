@@ -5,11 +5,19 @@ import { MovementDeleteButton } from "@/components/inventory/movement-delete-but
 import { RelativeTime } from "@/components/inventory/relative-time"
 import { Button } from "@/components/ui/button"
 import { Link } from "@/components/ui/link"
-import { formatKg } from "@/lib/inventory/format-kg"
-import { formatRoute } from "@/lib/inventory/format-route"
+import { formatKg, formatSignedKg } from "@/lib/inventory/format-kg"
+import { adjustmentSign, formatRoute } from "@/lib/inventory/format-route"
 import type { RecentMovement } from "@/lib/inventory/movements"
 import { cn } from "@/lib/styles/cn"
 import { useLocale, useTranslations } from "next-intl"
+
+function formatQuantity(movement: RecentMovement) {
+  if (movement.type === "ADJUSTMENT") {
+    const sign = adjustmentSign(movement.originName, movement.destinationName)
+    return formatSignedKg(sign * movement.quantityKg)
+  }
+  return formatKg(movement.quantityKg)
+}
 
 export function RecentMovementsView({
   movements,
@@ -104,7 +112,7 @@ export function RecentMovementsView({
                       isDeleted && "text-muted-foreground line-through"
                     )}
                   >
-                    {formatKg(movement.quantityKg)} ·{" "}
+                    {formatQuantity(movement)} ·{" "}
                     <LotLink lotId={movement.lotId} lotCode={movement.lotCode} />
                   </p>
                   <p className="mt-0.5 text-muted-foreground text-sm">

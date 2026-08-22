@@ -1,13 +1,12 @@
 {
   "common": { "skipToMain": "Saltar al contenido principal" },
   "home": {
-    "title": "App",
+    "title": "Papasud Stock Control",
     "inventoryTitle": "Inventario",
     "tabOverview": "Resumen",
-    "tabMovements": "Movimientos",
-    "tabCounts": "Conteos",
-    "movementTitle": "Registrar movimiento",
-    "movementSubtitle": "Describí transferencias de stock en lenguaje natural",
+    "tabOperations": "Operaciones",
+    "movementTitle": "Registrar operación",
+    "movementSubtitle": "Describí un movimiento o conteo en tus palabras",
     "inventoryStatusTitle": "Estado de inventario",
     "currentStockTitle": "Stock por ubicación",
     "discrepanciesTitle": "Discrepancias",
@@ -33,7 +32,7 @@
     "switchToDark": "Cambiar a tema oscuro"
   },
   "metadata": {
-    "title": "App",
-    "description": "Una plantilla moderna de Next.js."
+    "title": "Papasud Stock Control",
+    "description": "Control de stock de papa semilla."
   }
 }
