@@ -1,0 +1,12 @@
+{
+  "common": { "skipToMain": "Skip to main content" },
+  "home": { "title": "App" },
+  "theme": {
+    "switchToLight": "Switch to light theme",
+    "switchToDark": "Switch to dark theme"
+  },
+  "metadata": {
+    "title": "App",
+    "description": "A modern Next.js starter template."
+  }
+}

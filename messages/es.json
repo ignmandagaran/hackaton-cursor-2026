@@ -1,0 +1,12 @@
+{
+  "common": { "skipToMain": "Saltar al contenido principal" },
+  "home": { "title": "App" },
+  "theme": {
+    "switchToLight": "Cambiar a tema claro",
+    "switchToDark": "Cambiar a tema oscuro"
+  },
+  "metadata": {
+    "title": "App",
+    "description": "Una plantilla moderna de Next.js."
+  }
+}

@@ -1,0 +1,91 @@
+html {
+  --scrollbar-gutter: 0px;
+  -moz-text-size-adjust: none;
+  -webkit-text-size-adjust: none;
+  scrollbar-gutter: stable;
+  text-rendering: optimizeLegibility;
+  text-size-adjust: none;
+
+  &.lenis-stopped {
+    --scrollbar-gutter: var(--scrollbar-width);
+  }
+}
+
+html.overflow-hidden {
+  overflow: hidden;
+  touch-action: none;
+}
+
+a,
+button {
+  -webkit-tap-highlight-color: transparent;
+}
+
+:root {
+  color-scheme: light dark;
+}
+
+body {
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-font-smoothing: antialiased;
+  background-color: var(--background);
+  color: var(--foreground);
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  overscroll-behavior: none;
+}
+
+*::selection {
+  background-color: var(--primary);
+  color: var(--primary-foreground);
+}
+
+svg.icon {
+  path[fill],
+  rect[fill],
+  circle[fill] {
+    fill: currentColor;
+  }
+
+  path[stroke],
+  rect[stroke],
+  circle[stroke] {
+    stroke: currentColor;
+  }
+}
+
+.link {
+  @media (--hover) {
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
+
+*:focus-visible {
+  outline: 2px solid var(--ring);
+}
+
+html.scrollbar-grabbing,
+img {
+  -moz-user-select: none;
+  -ms-user-select: none;
+  -o-user-select: none;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+button {
+  cursor: pointer;
+  text-box-edge: cap alphabetic;
+  text-box-trim: both;
+  user-select: none;
+}
+
+html.screenshot {
+  *:not(:has(canvas), canvas, :has(#orchestra), #orchestra, #orchestra *) {
+    opacity: 0 !important;
+  }
+}
