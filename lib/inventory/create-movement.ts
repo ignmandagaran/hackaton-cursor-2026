@@ -26,7 +26,12 @@ export function createMovement(
           requested: validated.quantityKg,
           available: revalidation,
           lotCode: validated.lotCode,
+          lotId: validated.lotId,
           origin: validated.originName,
+          originId: validated.originId,
+          destination: validated.destinationName,
+          destinationId: validated.destinationId,
+          varietyName: validated.varietyName,
         },
       },
     }

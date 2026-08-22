@@ -7,17 +7,17 @@ export function MovementsTab({ movements }: { movements: RecentMovement[] }) {
     <div className="grid gap-6 lg:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)]">
       <section>
         <h2 className="mb-1 font-heading font-medium text-lg">
-          Registrar movimiento
+          Registrar operación
         </h2>
         <p className="mb-4 text-muted-foreground text-sm">
-          Describí transferencias de stock en lenguaje natural
+          Describí un movimiento o conteo en tus palabras.
         </p>
         <MovementForm />
       </section>
 
       <section>
         <h2 className="mb-4 font-heading font-medium text-lg">
-          Últimos movimientos
+          Últimas operaciones
         </h2>
         <RecentMovementsView movements={movements} />
       </section>

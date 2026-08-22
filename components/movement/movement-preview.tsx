@@ -12,7 +12,7 @@ export function MovementPreviewView({
     <div className="flex flex-col gap-4">
       <div className="rounded-4xl bg-card p-6 shadow-md ring-1 ring-foreground/5">
         <h2 className="mb-1 font-heading font-medium text-base">
-          Movimiento interpretado
+          Movimiento detectado
         </h2>
         <p className="mb-4 text-muted-foreground text-xs">
           Interpretado con IA · Stock validado contra inventario
@@ -23,7 +23,9 @@ export function MovementPreviewView({
             <dt className="text-muted-foreground text-xs uppercase tracking-wide">
               Lote
             </dt>
-            <dd className="font-medium text-lg">{preview.lotCode}</dd>
+            <dd className="font-medium text-lg">
+              {preview.lotCode} · {preview.varietyName}
+            </dd>
           </div>
           <div>
             <dt className="text-muted-foreground text-xs uppercase tracking-wide">
@@ -62,7 +64,7 @@ export function MovementPreviewView({
         <dl className="flex flex-col gap-3">
           <div>
             <dt className="text-muted-foreground text-sm">
-              Disponible en {preview.originName}
+              Stock disponible
             </dt>
             <dd className="font-medium text-lg tabular-nums">
               {formatKg(preview.availableStock)}
@@ -80,7 +82,7 @@ export function MovementPreviewView({
 
           <div>
             <dt className="text-muted-foreground text-sm">
-              Stock resultante en {preview.originName}
+              Stock resultante
             </dt>
             <dd className="font-medium text-lg tabular-nums">
               {formatKg(preview.stockAfter)}

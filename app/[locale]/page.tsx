@@ -1,7 +1,6 @@
 import { setRequestLocale } from "next-intl/server"
 import { InventoryDashboard } from "@/components/inventory/inventory-dashboard"
 import { Wrapper } from "@/components/layout/wrapper"
-import { getStockCountOptions } from "@/lib/actions/stock-count"
 import { getRecentMovements } from "@/lib/inventory/movements"
 import {
   getReconciliationSummary,
@@ -21,7 +20,6 @@ export default async function Home({
   const recentMovements = getRecentMovements()
   const reconciliation = getStockReconciliation()
   const summary = getReconciliationSummary()
-  const countOptions = await getStockCountOptions()
 
   return (
     <Wrapper>
@@ -32,7 +30,6 @@ export default async function Home({
             currentStock={currentStock}
             reconciliation={reconciliation}
             recentMovements={recentMovements}
-            countOptions={countOptions}
           />
         </div>
       </section>

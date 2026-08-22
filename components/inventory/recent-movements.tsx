@@ -3,10 +3,18 @@
 import { LotLink } from "@/components/inventory/lot-link"
 import { Button } from "@/components/ui/button"
 import { formatRelativeTime } from "@/lib/inventory/format-relative-time"
-import { formatKg } from "@/lib/inventory/format-kg"
-import { formatRoute } from "@/lib/inventory/format-route"
+import { formatKg, formatSignedKg } from "@/lib/inventory/format-kg"
+import { adjustmentSign, formatRoute } from "@/lib/inventory/format-route"
 import type { RecentMovement } from "@/lib/inventory/movements"
 import { cn } from "@/lib/styles/cn"
+
+function formatQuantity(movement: RecentMovement) {
+  if (movement.type === "ADJUSTMENT") {
+    const sign = adjustmentSign(movement.originName, movement.destinationName)
+    return formatSignedKg(sign * movement.quantityKg)
+  }
+  return formatKg(movement.quantityKg)
+}
 
 export function RecentMovementsView({
   movements,
@@ -29,11 +37,11 @@ export function RecentMovementsView({
       <div>
         {showHeader ? (
           <h2 className="mb-3 font-heading font-medium text-lg">
-            Últimos movimientos
+            Últimas operaciones
           </h2>
         ) : null}
         <p className="text-muted-foreground text-sm">
-          Sin movimientos registrados.
+          Sin operaciones registradas.
         </p>
       </div>
     )
@@ -44,7 +52,7 @@ export function RecentMovementsView({
       {showHeader ? (
         <div className="mb-3 flex items-center justify-between gap-3">
           <h2 className="font-heading font-medium text-lg">
-            Últimos movimientos
+            Últimas operaciones
           </h2>
           {onViewAll ? (
             <Button
@@ -71,7 +79,7 @@ export function RecentMovementsView({
             )}
           >
             <p className={cn(compact ? "text-sm" : "font-medium")}>
-              {formatKg(movement.quantityKg)} ·{" "}
+              {formatQuantity(movement)} ·{" "}
               <LotLink lotId={movement.lotId} lotCode={movement.lotCode} />
             </p>
             <p className="mt-0.5 text-muted-foreground text-sm">

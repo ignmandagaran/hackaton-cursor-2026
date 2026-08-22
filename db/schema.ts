@@ -3,7 +3,7 @@ import { integer, real, sqliteTable, text } from "drizzle-orm/sqlite-core"
 export const locationTypes = ["COLD_STORAGE", "WAREHOUSE", "OTHER"] as const
 export type LocationType = (typeof locationTypes)[number]
 
-export const movementTypes = ["INITIAL_BALANCE", "TRANSFER"] as const
+export const movementTypes = ["INITIAL_BALANCE", "TRANSFER", "ADJUSTMENT"] as const
 export type MovementType = (typeof movementTypes)[number]
 
 export const movementSources = ["NATURAL_LANGUAGE", "MANUAL", "IMPORT"] as const
@@ -36,6 +36,20 @@ export const locationAliases = sqliteTable("location_aliases", {
   alias: text("alias").notNull().unique(),
 })
 
+export const stockCounts = sqliteTable("stock_counts", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  lotId: integer("lot_id")
+    .notNull()
+    .references(() => lots.id),
+  locationId: integer("location_id")
+    .notNull()
+    .references(() => locations.id),
+  quantityKg: real("quantity_kg").notNull(),
+  countedAt: text("counted_at").notNull(),
+  notes: text("notes"),
+  createdAt: text("created_at").notNull(),
+})
+
 export const movements = sqliteTable("movements", {
   id: integer("id").primaryKey({ autoIncrement: true }),
   createdAt: text("created_at").notNull(),
@@ -51,18 +65,5 @@ export const movements = sqliteTable("movements", {
   rawInput: text("raw_input"),
   source: text("source").$type<MovementSource>().notNull(),
   notes: text("notes"),
-})
-
-export const stockCounts = sqliteTable("stock_counts", {
-  id: integer("id").primaryKey({ autoIncrement: true }),
-  lotId: integer("lot_id")
-    .notNull()
-    .references(() => lots.id),
-  locationId: integer("location_id")
-    .notNull()
-    .references(() => locations.id),
-  quantityKg: real("quantity_kg").notNull(),
-  countedAt: text("counted_at").notNull(),
-  notes: text("notes"),
-  createdAt: text("created_at").notNull(),
+  stockCountId: integer("stock_count_id").references(() => stockCounts.id),
 })

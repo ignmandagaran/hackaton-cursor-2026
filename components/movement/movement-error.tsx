@@ -14,15 +14,19 @@ export function MovementErrorView({
 }) {
   const details = error.details
   const isInsufficientStock = error.code === "INSUFFICIENT_STOCK" && details
+  const isLocationNotFound =
+    error.code === "ORIGIN_NOT_FOUND" ||
+    error.code === "DESTINATION_NOT_FOUND" ||
+    error.code === "LOCATION_NOT_FOUND" ||
+    error.code === "LOCATION_REQUIRED"
   const isAmbiguous =
     (error.code === "AMBIGUOUS_ORIGIN" ||
-      error.code === "AMBIGUOUS_DESTINATION") &&
+      error.code === "AMBIGUOUS_DESTINATION" ||
+      error.code === "AMBIGUOUS_LOCATION") &&
     details?.matches
   const isMissingInfo =
-    error.code === "PARSE_ERROR" && details?.missing === "lote, cantidad en kg, origen, destino"
+    error.code === "PARSE_ERROR" && typeof details?.missing === "string"
   const isLotNotFound = error.code === "LOT_NOT_FOUND"
-  const isLocationNotFound =
-    error.code === "ORIGIN_NOT_FOUND" || error.code === "DESTINATION_NOT_FOUND"
 
   const title = isInsufficientStock
     ? "Stock insuficiente"
@@ -52,13 +56,7 @@ export function MovementErrorView({
           </div>
         ) : isMissingInfo ? (
           <div className="mt-2 space-y-2">
-            <p>Necesitamos:</p>
-            <ul className="list-inside list-disc space-y-0.5">
-              <li>lote</li>
-              <li>cantidad en kg</li>
-              <li>origen</li>
-              <li>destino</li>
-            </ul>
+            <p>Necesitamos más datos para interpretar la operación.</p>
           </div>
         ) : isLotNotFound ? (
           <p className="mt-1">
@@ -83,7 +81,7 @@ export function MovementErrorView({
             className="mt-3"
             onClick={onEdit}
           >
-            Editar movimiento
+            Editar
           </Button>
         ) : null}
       </AlertDescription>

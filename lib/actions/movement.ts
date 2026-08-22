@@ -1,20 +1,35 @@
 "use server"
 
 import { revalidatePath } from "next/cache"
-import { parseMovement } from "@/lib/ai/parse-movement"
+import { parseInventoryOperation } from "@/lib/ai/parse-inventory-operation"
 import { routing } from "@/i18n/routing"
+import { confirmPhysicalCount } from "@/lib/inventory/confirm-count"
 import { createMovement } from "@/lib/inventory/create-movement"
-import { resolveMovementEntities } from "@/lib/inventory/resolve-movement"
+import {
+  findLotByCode,
+  getLocationById,
+  resolveCountEntities,
+  resolveMovementEntities,
+} from "@/lib/inventory/resolve-movement"
 import type {
+  ConfirmedCount,
+  CountLocationChoice,
+  CountPreview,
   CreatedMovement,
   MovementError,
   MovementPreview,
+  ParseOperationContext,
+  PendingTransfer,
+  ResolvedMovement,
 } from "@/lib/inventory/types"
+import { buildCountPreview } from "@/lib/inventory/validate-count"
 import { validateMovement } from "@/lib/inventory/validate-movement"
 
 export type InterpretResult =
-  | { ok: true; preview: MovementPreview }
-  | { ok: false; error: MovementError }
+  | { ok: true; kind: "TRANSFER"; preview: MovementPreview }
+  | { ok: true; kind: "COUNT"; preview: CountPreview }
+  | { ok: true; kind: "COUNT_LOCATION_CHOICE"; choice: CountLocationChoice }
+  | { ok: false; error: MovementError; pendingTransfer?: PendingTransfer }
 
 export type ConfirmPayload = {
   lotId: number
@@ -33,33 +48,192 @@ export type ConfirmPayload = {
 
 export type ConfirmResult =
   | { ok: true; result: CreatedMovement }
+  | { ok: false; error: MovementError; pendingTransfer?: PendingTransfer }
+
+export type ConfirmCountPayload = {
+  lotId: number
+  lotCode: string
+  varietyName: string
+  locationId: number
+  locationName: string
+  countedKg: number
+  rawInput: string
+  notes?: string | undefined
+}
+
+export type ConfirmCountResult =
+  | { ok: true; result: ConfirmedCount }
   | { ok: false; error: MovementError }
+
+function revalidateHome() {
+  for (const locale of routing.locales) {
+    const path = locale === routing.defaultLocale ? "/" : `/${locale}`
+    revalidatePath(path)
+  }
+}
+
+function toPendingTransfer(
+  resolved: ResolvedMovement,
+  rawInput: string
+): PendingTransfer {
+  const pending: PendingTransfer = {
+    lotId: resolved.lotId,
+    lotCode: resolved.lotCode,
+    varietyName: resolved.varietyName,
+    quantityKg: resolved.quantityKg,
+    originId: resolved.originId,
+    originName: resolved.originName,
+    destinationId: resolved.destinationId,
+    destinationName: resolved.destinationName,
+    rawInput,
+  }
+
+  if (resolved.notes) {
+    pending.notes = resolved.notes
+  }
+
+  return pending
+}
+
+function interpretResolvedTransfer(
+  resolved: ResolvedMovement,
+  rawInput: string
+): InterpretResult {
+  const validated = validateMovement(resolved)
+  if (!validated.ok) {
+    if (validated.error.code === "INSUFFICIENT_STOCK") {
+      return {
+        ok: false,
+        error: validated.error,
+        pendingTransfer: toPendingTransfer(resolved, rawInput),
+      }
+    }
+    return validated
+  }
+
+  return {
+    ok: true,
+    kind: "TRANSFER",
+    preview: {
+      ...validated.data,
+      rawInput,
+    },
+  }
+}
+
+export async function interpretInventoryOperation(
+  rawText: string,
+  context?: ParseOperationContext
+): Promise<InterpretResult> {
+  const parsed = await parseInventoryOperation(rawText, context)
+  if (!parsed.ok) return parsed
+
+  const rawInput = rawText.trim()
+
+  if (parsed.data.type === "TRANSFER") {
+    const { type: _type, ...transfer } = parsed.data
+    const resolved = resolveMovementEntities(transfer)
+    if (!resolved.ok) return resolved
+    return interpretResolvedTransfer(resolved.data, rawInput)
+  }
+
+  const resolved = resolveCountEntities({
+    parsed: parsed.data,
+    rawInput,
+  })
+
+  if (resolved.status === "error") {
+    return { ok: false, error: resolved.error }
+  }
+
+  if (resolved.status === "needs_location") {
+    return { ok: true, kind: "COUNT_LOCATION_CHOICE", choice: resolved.data }
+  }
+
+  return {
+    ok: true,
+    kind: "COUNT",
+    preview: buildCountPreview(resolved.data, rawInput),
+  }
+}
 
 export async function interpretMovement(
   rawText: string
 ): Promise<InterpretResult> {
-  const parsed = await parseMovement(rawText)
-  if (!parsed.ok) return parsed
+  return interpretInventoryOperation(rawText)
+}
 
-  const resolved = resolveMovementEntities(parsed.data)
-  if (!resolved.ok) return resolved
+export async function previewCountAtLocation(payload: {
+  lotId: number
+  lotCode: string
+  varietyName: string
+  locationId: number
+  countedKg: number
+  rawInput: string
+  notes?: string | undefined
+}): Promise<InterpretResult> {
+  const location = getLocationById(payload.locationId)
+  if (!location) {
+    return {
+      ok: false,
+      error: {
+        code: "LOCATION_NOT_FOUND",
+        message: "No encontramos la ubicación del conteo.",
+      },
+    }
+  }
 
-  const validated = validateMovement(resolved.data)
-  if (!validated.ok) return validated
+  const lot = findLotByCode(payload.lotCode)
+  if (!lot || lot.id !== payload.lotId) {
+    return {
+      ok: false,
+      error: {
+        code: "LOT_NOT_FOUND",
+        message: `No encontramos el lote ${payload.lotCode}.`,
+      },
+    }
+  }
+
+  const resolved = {
+    lotId: lot.id,
+    lotCode: lot.code,
+    varietyName: lot.varietyName,
+    locationId: location.id,
+    locationName: location.name,
+    countedKg: payload.countedKg,
+    ...(payload.notes ? { notes: payload.notes } : {}),
+  }
 
   return {
     ok: true,
-    preview: {
-      ...validated.data,
-      rawInput: rawText.trim(),
-    },
+    kind: "COUNT",
+    preview: buildCountPreview(resolved, payload.rawInput),
   }
+}
+
+export async function previewPendingTransfer(
+  pending: PendingTransfer
+): Promise<InterpretResult> {
+  return interpretResolvedTransfer(
+    {
+      lotId: pending.lotId,
+      lotCode: pending.lotCode,
+      varietyName: pending.varietyName,
+      quantityKg: pending.quantityKg,
+      originId: pending.originId,
+      originName: pending.originName,
+      destinationId: pending.destinationId,
+      destinationName: pending.destinationName,
+      notes: pending.notes,
+    },
+    pending.rawInput
+  )
 }
 
 export async function confirmMovement(
   payload: ConfirmPayload
 ): Promise<ConfirmResult> {
-  const validated = validateMovement({
+  const resolved: ResolvedMovement = {
     lotId: payload.lotId,
     lotCode: payload.lotCode,
     varietyName: payload.varietyName,
@@ -69,17 +243,66 @@ export async function confirmMovement(
     destinationId: payload.destinationId,
     destinationName: payload.destinationName,
     notes: payload.notes,
-  })
-
-  if (!validated.ok) return validated
-
-  const created = createMovement(validated.data, payload.rawInput)
-  if (!created.ok) return created
-
-  for (const locale of routing.locales) {
-    const path = locale === routing.defaultLocale ? "/" : `/${locale}`
-    revalidatePath(path)
   }
 
+  const validated = validateMovement(resolved)
+
+  if (!validated.ok) {
+    if (validated.error.code === "INSUFFICIENT_STOCK") {
+      return {
+        ok: false,
+        error: validated.error,
+        pendingTransfer: toPendingTransfer(resolved, payload.rawInput),
+      }
+    }
+    return validated
+  }
+
+  const created = createMovement(validated.data, payload.rawInput)
+  if (!created.ok) {
+    if (created.error.code === "INSUFFICIENT_STOCK") {
+      return {
+        ok: false,
+        error: created.error,
+        pendingTransfer: toPendingTransfer(resolved, payload.rawInput),
+      }
+    }
+    return created
+  }
+
+  revalidateHome()
   return { ok: true, result: created.data }
+}
+
+export async function confirmCount(
+  payload: ConfirmCountPayload
+): Promise<ConfirmCountResult> {
+  const preview = buildCountPreview(
+    {
+      lotId: payload.lotId,
+      lotCode: payload.lotCode,
+      varietyName: payload.varietyName,
+      locationId: payload.locationId,
+      locationName: payload.locationName,
+      countedKg: payload.countedKg,
+      ...(payload.notes ? { notes: payload.notes } : {}),
+    },
+    payload.rawInput
+  )
+
+  const confirmed = confirmPhysicalCount({
+    lotId: preview.lotId,
+    lotCode: preview.lotCode,
+    varietyName: preview.varietyName,
+    locationId: preview.locationId,
+    locationName: preview.locationName,
+    countedKg: preview.countedKg,
+    rawInput: preview.rawInput,
+    notes: preview.notes,
+  })
+
+  if (!confirmed.ok) return confirmed
+
+  revalidateHome()
+  return { ok: true, result: confirmed.data }
 }

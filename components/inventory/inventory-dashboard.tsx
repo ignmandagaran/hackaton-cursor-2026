@@ -9,20 +9,14 @@ import type {
   ReconciliationSummary,
   StockReconciliation,
 } from "@/lib/inventory/reconciliation"
-import type { StockCountOption } from "@/lib/actions/stock-count"
 import { OverviewTab } from "./overview-tab"
 import { MovementsTab } from "./movements-tab"
-import { CountsTab } from "./counts-tab"
 
 type InventoryDashboardProps = {
   summary: ReconciliationSummary
   currentStock: CurrentStock[]
   reconciliation: StockReconciliation[]
   recentMovements: RecentMovement[]
-  countOptions: {
-    lots: StockCountOption[]
-    locations: StockCountOption[]
-  }
 }
 
 export function InventoryDashboard({
@@ -30,7 +24,6 @@ export function InventoryDashboard({
   currentStock,
   reconciliation,
   recentMovements,
-  countOptions,
 }: InventoryDashboardProps) {
   const t = useTranslations("home")
   const [tab, setTab] = useState("overview")
@@ -44,8 +37,7 @@ export function InventoryDashboard({
       <Tabs value={tab} onValueChange={setTab}>
         <TabsList variant="line" className="w-full sm:w-auto">
           <TabsTrigger value="overview">{t("tabOverview")}</TabsTrigger>
-          <TabsTrigger value="movements">{t("tabMovements")}</TabsTrigger>
-          <TabsTrigger value="counts">{t("tabCounts")}</TabsTrigger>
+          <TabsTrigger value="operations">{t("tabOperations")}</TabsTrigger>
         </TabsList>
 
         <TabsContent value="overview" className="mt-6">
@@ -54,20 +46,12 @@ export function InventoryDashboard({
             stock={currentStock}
             reconciliation={reconciliation}
             recentMovements={recentMovements}
-            onViewAllMovements={() => setTab("movements")}
+            onViewAllMovements={() => setTab("operations")}
           />
         </TabsContent>
 
-        <TabsContent value="movements" className="mt-6">
+        <TabsContent value="operations" className="mt-6">
           <MovementsTab movements={recentMovements} />
-        </TabsContent>
-
-        <TabsContent value="counts" className="mt-6">
-          <CountsTab
-            lots={countOptions.lots}
-            locations={countOptions.locations}
-            reconciliation={reconciliation}
-          />
         </TabsContent>
       </Tabs>
     </div>
