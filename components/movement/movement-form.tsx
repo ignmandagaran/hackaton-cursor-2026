@@ -16,20 +16,29 @@ import {
   interpretMovement,
   type ConfirmPayload,
 } from "@/lib/actions/movement"
-import { useSpeechRecognition } from "@/lib/hooks/use-speech-recognition"
-import type { CreatedMovement, MovementError, MovementPreview } from "@/lib/inventory/types"
+import { useSpeechToText } from "@/lib/hooks/use-speech-to-text"
+import type {
+  CreatedMovement,
+  MovementError,
+  MovementPreview,
+} from "@/lib/inventory/types"
 import { cn } from "@/lib/styles/cn"
 import { MovementErrorView } from "./movement-error"
 import { MovementPreviewView } from "./movement-preview"
 import { MovementSuccessView } from "./movement-success"
 
-const DEMO_EXAMPLE =
-  "Mové 500 kg del lote 224 del Frigorífico 1 al Galpón"
+const DEMO_EXAMPLE = "Mové 500 kg del lote 224 del Frigorífico 1 al Galpón"
 
 type Step = "input" | "preview" | "success"
 
 type FormError = Pick<MovementError, "message" | "details"> & {
   code?: MovementError["code"]
+}
+
+function voiceButtonLabel(isTranscribing: boolean, isListening: boolean) {
+  if (isTranscribing) return "Transcribiendo con Whisper"
+  if (isListening) return "Dejar de escuchar"
+  return "Dictar movimiento con Whisper"
 }
 
 export function MovementForm() {
@@ -41,8 +50,12 @@ export function MovementForm() {
   const [success, setSuccess] = useState<CreatedMovement | null>(null)
   const [error, setError] = useState<FormError | null>(null)
   const [isPending, startTransition] = useTransition()
-  const { isSupported: isVoiceSupported, isListening, toggleListening } =
-    useSpeechRecognition()
+  const {
+    isSupported: isVoiceSupported,
+    isListening,
+    isTranscribing,
+    toggleListening,
+  } = useSpeechToText()
 
   const isInterpreting = step === "input" && isPending
   const isConfirming = step === "preview" && isPending
@@ -123,13 +136,18 @@ export function MovementForm() {
   }
 
   function handleVoiceInput() {
-    if (isInterpreting) return
+    if (isInterpreting || isTranscribing) return
     setError(null)
-    toggleListening((transcript) => {
-      if (transcript) {
-        setRawText(transcript)
+    toggleListening(
+      (transcript) => {
+        setRawText((current) =>
+          current.trim() ? `${current.trim()} ${transcript}` : transcript
+        )
+      },
+      (message) => {
+        setError({ message })
       }
-    })
+    )
   }
 
   function handleKeyDown(event: React.KeyboardEvent<HTMLTextAreaElement>) {
@@ -147,9 +165,7 @@ export function MovementForm() {
     return (
       <div className="flex w-full max-w-xl flex-col gap-4">
         <MovementPreviewView preview={preview} />
-        {error ? (
-          <MovementErrorView error={error} onEdit={handleEdit} />
-        ) : null}
+        {error ? <MovementErrorView error={error} onEdit={handleEdit} /> : null}
         <div className="flex gap-3">
           <Button variant="outline" onClick={handleEdit} disabled={isPending}>
             Editar
@@ -198,7 +214,7 @@ export function MovementForm() {
           onChange={(event) => setRawText(event.target.value)}
           onKeyDown={handleKeyDown}
           rows={4}
-          disabled={isInterpreting}
+          disabled={isInterpreting || isTranscribing}
           placeholder={DEMO_EXAMPLE}
         />
         {isVoiceSupported ? (
@@ -207,23 +223,34 @@ export function MovementForm() {
               size="icon-sm"
               variant={isListening ? "destructive" : "ghost"}
               onClick={handleVoiceInput}
-              disabled={isInterpreting}
-              aria-label={
-                isListening ? "Dejar de escuchar" : "Dictar movimiento"
-              }
+              disabled={isInterpreting || isTranscribing}
+              aria-label={voiceButtonLabel(isTranscribing, isListening)}
               aria-pressed={isListening}
             >
-              <Microphone
-                className={cn(isListening && "animate-pulse")}
-                weight={isListening ? "fill" : "regular"}
-              />
+              {isTranscribing ? (
+                <Spinner size="sm" />
+              ) : (
+                <Microphone
+                  className={cn(isListening && "animate-pulse")}
+                  weight={isListening ? "fill" : "regular"}
+                />
+              )}
             </InputGroupButton>
           </InputGroupAddon>
         ) : null}
       </InputGroup>
 
       {isListening ? (
-        <p className="text-muted-foreground text-sm">Escuchando…</p>
+        <p className="text-muted-foreground text-sm">
+          Escuchando… hacé clic en el micrófono para transcribir con Whisper.
+        </p>
+      ) : null}
+
+      {isTranscribing ? (
+        <div className="flex items-center gap-2 text-muted-foreground text-sm">
+          <Spinner size="sm" />
+          Transcribiendo con Whisper…
+        </div>
       ) : null}
 
       {isInterpreting ? (
@@ -233,14 +260,14 @@ export function MovementForm() {
         </div>
       ) : null}
 
-      {error ? (
-        <MovementErrorView error={error} onEdit={handleEdit} />
-      ) : null}
+      {error ? <MovementErrorView error={error} onEdit={handleEdit} /> : null}
 
       <div className="flex flex-wrap gap-3">
         <Button
           onClick={handleInterpret}
-          disabled={isPending || !rawText.trim()}
+          disabled={
+            isPending || isListening || isTranscribing || !rawText.trim()
+          }
         >
           {isInterpreting ? (
             <>

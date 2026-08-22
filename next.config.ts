@@ -73,6 +73,9 @@ const nextConfig: NextConfig = {
       "postprocessing",
       "lenis",
     ],
+    serverActions: {
+      bodySizeLimit: "4mb",
+    },
   },
   images: {
     dangerouslyAllowSVG: true,
