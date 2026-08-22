@@ -18,9 +18,6 @@ dist/
 # testing
 coverage/
 
-# env
-.env
-.env*.local
 
 # vercel
 .vercel
