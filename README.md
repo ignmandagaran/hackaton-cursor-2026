@@ -27,12 +27,12 @@ Gemini interprets language only. It never decides stock levels, lot existence, o
 ## Running locally
 
 ```bash
-pnpm install
+bun install
 cp .env.example .env.local
 # Add your GOOGLE_GENERATIVE_AI_API_KEY to .env.local
-pnpm db:migrate
-pnpm db:seed
-pnpm dev
+bun run db:migrate
+bun run db:seed
+bun run dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000).
@@ -53,7 +53,7 @@ The official names of the 3 cold-storage facilities + 1 warehouse are **not** co
 
 | Script | Description |
 |--------|-------------|
-| `pnpm db:generate` | Generate Drizzle migrations |
-| `pnpm db:migrate` | Apply migrations |
-| `pnpm db:seed` | Load demo data |
-| `pnpm dev` | Start dev server |
+| `bun run db:generate` | Generate Drizzle migrations |
+| `bun run db:migrate` | Apply migrations |
+| `bun run db:seed` | Load demo data |
+| `bun run dev` | Start dev server |
