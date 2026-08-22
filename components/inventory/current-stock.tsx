@@ -4,6 +4,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
+import { LotLink } from "@/components/inventory/lot-link"
 import type { CurrentStock } from "@/lib/inventory/stock"
 import { formatKg } from "@/lib/inventory/format-kg"
 
@@ -28,8 +29,13 @@ export function CurrentStockView({ stock }: { stock: CurrentStock[] }) {
                   key={lot.lotId}
                   className="flex items-baseline justify-between gap-4"
                 >
-                  <span className="font-medium">Lote {lot.lotCode}</span>
-                  <span className="text-muted-foreground text-sm tabular-nums">
+                  <div className="flex min-w-0 flex-col gap-0.5">
+                    <LotLink lotId={lot.lotId} lotCode={lot.lotCode} />
+                    <span className="text-muted-foreground text-xs">
+                      {lot.varietyName}
+                    </span>
+                  </div>
+                  <span className="shrink-0 text-muted-foreground text-sm tabular-nums">
                     {formatKg(lot.quantityKg)}
                   </span>
                 </li>

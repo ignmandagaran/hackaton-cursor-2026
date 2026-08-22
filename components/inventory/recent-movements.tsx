@@ -1,15 +1,8 @@
+import { LotLink } from "@/components/inventory/lot-link"
 import { formatRelativeTime } from "@/lib/inventory/format-relative-time"
 import { formatKg } from "@/lib/inventory/format-kg"
+import { formatRoute } from "@/lib/inventory/format-route"
 import type { RecentMovement } from "@/lib/inventory/movements"
-
-function formatRoute(movement: RecentMovement): string {
-  const origin =
-    movement.type === "INITIAL_BALANCE"
-      ? "Saldo inicial"
-      : (movement.originName ?? "—")
-  const destination = movement.destinationName ?? "—"
-  return `${origin} → ${destination}`
-}
 
 export function RecentMovementsView({
   movements,
@@ -30,7 +23,8 @@ export function RecentMovementsView({
           className="rounded-4xl bg-card px-5 py-4 shadow-md ring-1 ring-foreground/5"
         >
           <p className="font-medium">
-            {formatKg(movement.quantityKg)} · Lote {movement.lotCode}
+            {formatKg(movement.quantityKg)} ·{" "}
+            <LotLink lotId={movement.lotId} lotCode={movement.lotCode} />
           </p>
           <p className="mt-1 text-muted-foreground text-sm">
             {formatRoute(movement)}

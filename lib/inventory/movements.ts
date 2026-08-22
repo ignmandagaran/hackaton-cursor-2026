@@ -12,6 +12,7 @@ import {
 export type RecentMovement = {
   id: number
   type: MovementType
+  lotId: number
   lotCode: string
   varietyName: string
   quantityKg: number
@@ -29,6 +30,7 @@ export function getRecentMovements(limit = 10): RecentMovement[] {
     .select({
       id: movements.id,
       type: movements.type,
+      lotId: lots.id,
       lotCode: lots.code,
       varietyName: varieties.name,
       quantityKg: movements.quantityKg,
