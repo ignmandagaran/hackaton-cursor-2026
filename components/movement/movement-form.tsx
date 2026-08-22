@@ -1,16 +1,24 @@
 "use client"
 
+import { Microphone } from "@phosphor-icons/react"
 import { useRef, useState, useTransition } from "react"
 import { Button } from "@/components/ui/button"
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupButton,
+  InputGroupTextarea,
+} from "@/components/ui/input-group"
 import { Spinner } from "@/components/ui/spinner"
-import { Textarea } from "@/components/ui/textarea"
 import { useRouter } from "@/i18n/navigation"
 import {
   confirmMovement,
   interpretMovement,
   type ConfirmPayload,
 } from "@/lib/actions/movement"
+import { useSpeechRecognition } from "@/lib/hooks/use-speech-recognition"
 import type { CreatedMovement, MovementError, MovementPreview } from "@/lib/inventory/types"
+import { cn } from "@/lib/styles/cn"
 import { MovementErrorView } from "./movement-error"
 import { MovementPreviewView } from "./movement-preview"
 import { MovementSuccessView } from "./movement-success"
@@ -33,6 +41,8 @@ export function MovementForm() {
   const [success, setSuccess] = useState<CreatedMovement | null>(null)
   const [error, setError] = useState<FormError | null>(null)
   const [isPending, startTransition] = useTransition()
+  const { isSupported: isVoiceSupported, isListening, toggleListening } =
+    useSpeechRecognition()
 
   const isInterpreting = step === "input" && isPending
   const isConfirming = step === "preview" && isPending
@@ -112,6 +122,16 @@ export function MovementForm() {
     textareaRef.current?.focus()
   }
 
+  function handleVoiceInput() {
+    if (isInterpreting) return
+    setError(null)
+    toggleListening((transcript) => {
+      if (transcript) {
+        setRawText(transcript)
+      }
+    })
+  }
+
   function handleKeyDown(event: React.KeyboardEvent<HTMLTextAreaElement>) {
     if ((event.metaKey || event.ctrlKey) && event.key === "Enter") {
       event.preventDefault()
@@ -167,16 +187,44 @@ export function MovementForm() {
         </p>
       </div>
 
-      <Textarea
-        ref={textareaRef}
-        id="movement-input"
-        value={rawText}
-        onChange={(event) => setRawText(event.target.value)}
-        onKeyDown={handleKeyDown}
-        rows={4}
-        disabled={isInterpreting}
-        placeholder={DEMO_EXAMPLE}
-      />
+      <InputGroup
+        data-disabled={isInterpreting ? true : undefined}
+        className={cn(isInterpreting && "opacity-50")}
+      >
+        <InputGroupTextarea
+          ref={textareaRef}
+          id="movement-input"
+          value={rawText}
+          onChange={(event) => setRawText(event.target.value)}
+          onKeyDown={handleKeyDown}
+          rows={4}
+          disabled={isInterpreting}
+          placeholder={DEMO_EXAMPLE}
+        />
+        {isVoiceSupported ? (
+          <InputGroupAddon align="inline-end" className="self-end pb-2">
+            <InputGroupButton
+              size="icon-sm"
+              variant={isListening ? "destructive" : "ghost"}
+              onClick={handleVoiceInput}
+              disabled={isInterpreting}
+              aria-label={
+                isListening ? "Dejar de escuchar" : "Dictar movimiento"
+              }
+              aria-pressed={isListening}
+            >
+              <Microphone
+                className={cn(isListening && "animate-pulse")}
+                weight={isListening ? "fill" : "regular"}
+              />
+            </InputGroupButton>
+          </InputGroupAddon>
+        ) : null}
+      </InputGroup>
+
+      {isListening ? (
+        <p className="text-muted-foreground text-sm">Escuchando…</p>
+      ) : null}
 
       {isInterpreting ? (
         <div className="flex items-center gap-2 text-muted-foreground text-sm">
