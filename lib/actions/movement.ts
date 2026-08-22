@@ -1,16 +1,16 @@
 "use server"
 
-import { revalidatePath } from "next/cache"
 import { parseInventoryOperation } from "@/lib/ai/parse-inventory-operation"
-import { routing } from "@/i18n/routing"
 import { confirmPhysicalCount } from "@/lib/inventory/confirm-count"
 import { createMovement } from "@/lib/inventory/create-movement"
+import { softDeleteMovement } from "@/lib/inventory/delete-movement"
 import {
   findLotByCode,
   getLocationById,
   resolveCountEntities,
   resolveMovementEntities,
 } from "@/lib/inventory/resolve-movement"
+import { revalidateInventoryPaths } from "@/lib/inventory/revalidate-inventory"
 import type {
   ConfirmedCount,
   CountLocationChoice,
@@ -65,12 +65,9 @@ export type ConfirmCountResult =
   | { ok: true; result: ConfirmedCount }
   | { ok: false; error: MovementError }
 
-function revalidateHome() {
-  for (const locale of routing.locales) {
-    const path = locale === routing.defaultLocale ? "/" : `/${locale}`
-    revalidatePath(path)
-  }
-}
+export type DeleteMovementResult =
+  | { ok: true }
+  | { ok: false; error: MovementError }
 
 function toPendingTransfer(
   resolved: ResolvedMovement,
@@ -270,7 +267,7 @@ export async function confirmMovement(
     return created
   }
 
-  revalidateHome()
+  revalidateInventoryPaths()
   return { ok: true, result: created.data }
 }
 
@@ -303,6 +300,17 @@ export async function confirmCount(
 
   if (!confirmed.ok) return confirmed
 
-  revalidateHome()
+  revalidateInventoryPaths()
   return { ok: true, result: confirmed.data }
+}
+
+export async function deleteMovement(
+  id: number
+): Promise<DeleteMovementResult> {
+  const result = softDeleteMovement(id)
+  if (!result.ok) return result
+
+  revalidateInventoryPaths()
+
+  return { ok: true }
 }

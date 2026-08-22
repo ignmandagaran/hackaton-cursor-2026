@@ -147,6 +147,8 @@ export type MovementError = {
     | "INVALID_QUANTITY"
     | "PARSE_ERROR"
     | "BAGS_NOT_SUPPORTED"
+    | "MOVEMENT_NOT_FOUND"
+    | "MOVEMENT_ALREADY_DELETED"
   message: string
   details?: Record<string, string | number> | undefined
 }

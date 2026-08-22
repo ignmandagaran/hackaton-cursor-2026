@@ -65,5 +65,6 @@ export const movements = sqliteTable("movements", {
   rawInput: text("raw_input"),
   source: text("source").$type<MovementSource>().notNull(),
   notes: text("notes"),
+  deletedAt: text("deleted_at"),
   stockCountId: integer("stock_count_id").references(() => stockCounts.id),
 })

@@ -1,7 +1,7 @@
 {
   "common": { "skipToMain": "Skip to main content" },
   "home": {
-    "title": "App",
+    "title": "Papasud Stock Control",
     "inventoryTitle": "Inventory",
     "tabOverview": "Overview",
     "tabOperations": "Operations",
@@ -11,14 +11,28 @@
     "currentStockTitle": "Stock by location",
     "discrepanciesTitle": "Discrepancies",
     "registerCountTitle": "Register count",
-    "recentMovementsTitle": "Recent movements"
+    "recentMovementsTitle": "Recent movements",
+    "viewAllMovements": "View all"
+  },
+  "movements": {
+    "title": "All movements",
+    "back": "Back",
+    "empty": "No movements recorded.",
+    "deleted": "Deleted",
+    "deleteAriaLabel": "Delete movement",
+    "deleteTitle": "Delete movement?",
+    "deleteDescription": "This action is irreversible. The movement will remain visible as deleted and stock will be restored at the origin.",
+    "deleteCancel": "Cancel",
+    "deleteConfirm": "Delete",
+    "deletePending": "Deleting…",
+    "deleteSuccess": "Movement deleted"
   },
   "theme": {
     "switchToLight": "Switch to light theme",
     "switchToDark": "Switch to dark theme"
   },
   "metadata": {
-    "title": "App",
-    "description": "A modern Next.js starter template."
+    "title": "Papasud Stock Control",
+    "description": "Seed potato stock control."
   }
 }

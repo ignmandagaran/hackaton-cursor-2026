@@ -46,7 +46,6 @@ export function InventoryDashboard({
             stock={currentStock}
             reconciliation={reconciliation}
             recentMovements={recentMovements}
-            onViewAllMovements={() => setTab("operations")}
           />
         </TabsContent>
 

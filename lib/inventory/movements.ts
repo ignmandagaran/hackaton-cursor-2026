@@ -19,9 +19,10 @@ export type RecentMovement = {
   originName: string | null
   destinationName: string | null
   createdAt: string
+  deletedAt: string | null
 }
 
-export function getRecentMovements(limit = 10): RecentMovement[] {
+function buildMovementsQuery() {
   const db = getDb()
   const originLocation = alias(locations, "origin_location")
   const destinationLocation = alias(locations, "destination_location")
@@ -37,6 +38,7 @@ export function getRecentMovements(limit = 10): RecentMovement[] {
       originName: originLocation.name,
       destinationName: destinationLocation.name,
       createdAt: movements.createdAt,
+      deletedAt: movements.deletedAt,
     })
     .from(movements)
     .innerJoin(lots, eq(movements.lotId, lots.id))
@@ -47,6 +49,12 @@ export function getRecentMovements(limit = 10): RecentMovement[] {
       eq(movements.destinationLocationId, destinationLocation.id)
     )
     .orderBy(desc(movements.createdAt), desc(movements.id))
-    .limit(limit)
-    .all()
+}
+
+export function getRecentMovements(limit = 10): RecentMovement[] {
+  return buildMovementsQuery().limit(limit).all()
+}
+
+export function getAllMovements(): RecentMovement[] {
+  return buildMovementsQuery().all()
 }

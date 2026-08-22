@@ -1,4 +1,4 @@
-import { and, asc, eq, isNotNull, sql } from "drizzle-orm"
+import { and, asc, eq, isNotNull, isNull, sql } from "drizzle-orm"
 import { getDb } from "@/db"
 import { locations, lots, movements, varieties } from "@/db/schema"
 
@@ -55,7 +55,8 @@ export function getAvailableStock({
     .where(
       and(
         eq(movements.lotId, lotId),
-        eq(movements.destinationLocationId, locationId)
+        eq(movements.destinationLocationId, locationId),
+        isNull(movements.deletedAt)
       )
     )
     .get()
@@ -69,7 +70,8 @@ export function getAvailableStock({
       and(
         eq(movements.lotId, lotId),
         eq(movements.originLocationId, locationId),
-        isNotNull(movements.originLocationId)
+        isNotNull(movements.originLocationId),
+        isNull(movements.deletedAt)
       )
     )
     .get()

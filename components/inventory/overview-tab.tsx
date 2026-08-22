@@ -14,7 +14,6 @@ type OverviewTabProps = {
   stock: CurrentStock[]
   reconciliation: StockReconciliation[]
   recentMovements: RecentMovement[]
-  onViewAllMovements: () => void
 }
 
 export function OverviewTab({
@@ -22,7 +21,6 @@ export function OverviewTab({
   stock,
   reconciliation,
   recentMovements,
-  onViewAllMovements,
 }: OverviewTabProps) {
   return (
     <div className="flex flex-col gap-8">
@@ -54,7 +52,7 @@ export function OverviewTab({
           movements={recentMovements}
           limit={5}
           showHeader
-          onViewAll={onViewAllMovements}
+          viewAllHref="/movements"
           compact
         />
       </section>

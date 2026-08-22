@@ -1,6 +1,5 @@
 "use client"
 
-import NextLink from "next/link"
 import {
   type AnchorHTMLAttributes,
   type ComponentProps,
@@ -8,7 +7,7 @@ import {
   useEffect,
   useState,
 } from "react"
-import { usePathname } from "@/i18n/navigation"
+import { IntlLink, usePathname } from "@/i18n/navigation"
 
 // Helper to extract props safe for button elements
 function getButtonProps(props: Record<string, unknown>) {
@@ -37,9 +36,9 @@ function getDivProps(props: Record<string, unknown>) {
 
 type CustomLinkProps = Omit<
   AnchorHTMLAttributes<HTMLAnchorElement>,
-  keyof ComponentProps<typeof NextLink> | "href"
+  keyof ComponentProps<typeof IntlLink> | "href"
 > &
-  Omit<ComponentProps<typeof NextLink>, "href"> & {
+  Omit<ComponentProps<typeof IntlLink>, "href"> & {
     href?: string
     onClick?: (e: MouseEvent<HTMLElement>) => void
     scroll?: boolean
@@ -118,6 +117,15 @@ export function Link({
     return <span {...getDivProps(props)}>{children}</span>
   }
 
+  // Hash-only links (e.g. skip-to-content) are plain anchors
+  if (href.startsWith("#")) {
+    return (
+      <a href={href} onClick={onClick} {...props}>
+        {children}
+      </a>
+    )
+  }
+
   // For SSR, check if it's external based on the href pattern
   const isExternalSSR =
     href.startsWith("http://") || href.startsWith("https://")
@@ -138,8 +146,8 @@ export function Link({
   }
 
   return (
-    <NextLink
-      href={href as ComponentProps<typeof NextLink>["href"]}
+    <IntlLink
+      href={href as ComponentProps<typeof IntlLink>["href"]}
       prefetch={shouldPrefetch}
       scroll={scroll}
       data-active={isActive || undefined}
@@ -147,6 +155,6 @@ export function Link({
       {...props}
     >
       {children}
-    </NextLink>
+    </IntlLink>
   )
 }
