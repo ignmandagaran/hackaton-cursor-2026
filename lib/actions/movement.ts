@@ -1,6 +1,8 @@
 "use server"
 
+import { revalidatePath } from "next/cache"
 import { parseMovement } from "@/lib/ai/parse-movement"
+import { routing } from "@/i18n/routing"
 import { createMovement } from "@/lib/inventory/create-movement"
 import { resolveMovementEntities } from "@/lib/inventory/resolve-movement"
 import type {
@@ -73,6 +75,11 @@ export async function confirmMovement(
 
   const created = createMovement(validated.data, payload.rawInput)
   if (!created.ok) return created
+
+  for (const locale of routing.locales) {
+    const path = locale === routing.defaultLocale ? "/" : `/${locale}`
+    revalidatePath(path)
+  }
 
   return { ok: true, result: created.data }
 }

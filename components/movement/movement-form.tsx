@@ -3,6 +3,7 @@
 import { useState, useTransition } from "react"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
+import { useRouter } from "@/i18n/navigation"
 import {
   confirmMovement,
   interpretMovement,
@@ -16,6 +17,7 @@ import { MovementSuccessView } from "./movement-success"
 type Step = "input" | "preview" | "success"
 
 export function MovementForm() {
+  const router = useRouter()
   const [rawText, setRawText] = useState(
     "Mové 500 kg del lote 224 del Frigorífico 1 al Galpón"
   )
@@ -74,6 +76,7 @@ export function MovementForm() {
       }
       setSuccess(result.result)
       setStep("success")
+      router.refresh()
     })
   }
 

@@ -1,6 +1,17 @@
-import { and, eq, isNotNull, sql } from "drizzle-orm"
+import { and, asc, eq, isNotNull, sql } from "drizzle-orm"
 import { getDb } from "@/db"
-import { movements } from "@/db/schema"
+import { locations, lots, movements, varieties } from "@/db/schema"
+
+export type CurrentStock = {
+  locationId: number
+  locationName: string
+  lots: {
+    lotId: number
+    lotCode: string
+    varietyName: string
+    quantityKg: number
+  }[]
+}
 
 export function getAvailableStock({
   lotId,
@@ -42,4 +53,43 @@ export function getAvailableStock({
   const outgoingTotal = outgoing?.total ?? 0
 
   return Math.round((incomingTotal - outgoingTotal) * 100) / 100
+}
+
+export function getCurrentStock(): CurrentStock[] {
+  const db = getDb()
+
+  const allLocations = db
+    .select()
+    .from(locations)
+    .orderBy(asc(locations.name))
+    .all()
+
+  const allLots = db
+    .select({
+      id: lots.id,
+      code: lots.code,
+      varietyName: varieties.name,
+    })
+    .from(lots)
+    .innerJoin(varieties, eq(lots.varietyId, varieties.id))
+    .orderBy(asc(lots.code))
+    .all()
+
+  return allLocations
+    .map((location) => ({
+      locationId: location.id,
+      locationName: location.name,
+      lots: allLots
+        .map((lot) => ({
+          lotId: lot.id,
+          lotCode: lot.code,
+          varietyName: lot.varietyName,
+          quantityKg: getAvailableStock({
+            lotId: lot.id,
+            locationId: location.id,
+          }),
+        }))
+        .filter((lot) => lot.quantityKg !== 0),
+    }))
+    .filter((location) => location.lots.length > 0)
 }

@@ -3,7 +3,9 @@
   "home": {
     "title": "App",
     "movementTitle": "Registrar movimiento",
-    "movementSubtitle": "Describí transferencias de stock en lenguaje natural"
+    "movementSubtitle": "Describí transferencias de stock en lenguaje natural",
+    "currentStockTitle": "Stock actual",
+    "recentMovementsTitle": "Últimos movimientos"
   },
   "theme": {
     "switchToLight": "Cambiar a tema claro",
