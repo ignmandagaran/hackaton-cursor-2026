@@ -4,35 +4,37 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
-import type { ReconciliationSummary } from "@/lib/inventory/reconciliation"
 import { formatKg } from "@/lib/inventory/format-kg"
 
-export function ReconciliationSummaryCards({
-  summary,
-}: {
-  summary: ReconciliationSummary
-}) {
+export type InventoryStatusStats = {
+  totalKg: number
+  locationCount: number
+  movementsLast24h: number
+  movedKgLast24h: number
+}
+
+export function InventoryStatusCards({ stats }: { stats: InventoryStatusStats }) {
   const items = [
     {
       label: "Stock total",
-      value: formatKg(summary.totalExpectedKg),
+      value: formatKg(stats.totalKg),
     },
     {
-      label: "Lotes con diferencias",
-      value: String(summary.discrepancyCount),
+      label: "Cantidad de ubicaciones",
+      value: String(stats.locationCount),
     },
     {
-      label: "Stock verificado",
-      value: formatKg(summary.verifiedKg),
+      label: "Movimientos en las últimas 24 h",
+      value: String(stats.movementsLast24h),
     },
     {
-      label: "Sin contar",
-      value: formatKg(summary.notCountedKg),
+      label: "Kilos movidos en las últimas 24 h",
+      value: formatKg(stats.movedKgLast24h),
     },
   ]
 
   return (
-    <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+    <div className="grid grid-cols-2 gap-3 desktop:grid-cols-4">
       {items.map((item) => (
         <Card key={item.label} size="sm">
           <CardHeader className="pb-0">

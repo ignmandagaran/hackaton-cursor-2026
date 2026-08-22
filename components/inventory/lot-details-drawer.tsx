@@ -105,32 +105,6 @@ export function LotDetailsDrawer({
                             {formatKg(entry.quantityKg)}
                           </span>
                         </div>
-                        <p className="mt-1 text-muted-foreground text-xs tabular-nums">
-                          Sistema: {formatKg(entry.expectedKg)}
-                        </p>
-                        {entry.countedKg !== null && (
-                          <p className="text-muted-foreground text-xs tabular-nums">
-                            Contado: {formatKg(entry.countedKg)}
-                          </p>
-                        )}
-                        {entry.status === "VERIFIED" && (
-                          <p className="mt-1 text-emerald-700 text-xs dark:text-emerald-400">
-                            ✓ Verificado
-                          </p>
-                        )}
-                        {entry.status === "DISCREPANCY" &&
-                          entry.differenceKg !== null && (
-                            <p className="mt-1 text-amber-700 text-xs dark:text-amber-400">
-                              ⚠{" "}
-                              {entry.differenceKg > 0 ? "+" : ""}
-                              {entry.differenceKg.toLocaleString("es-AR")} kg
-                            </p>
-                          )}
-                        {entry.status === "NOT_COUNTED" && (
-                          <p className="mt-1 text-muted-foreground text-xs">
-                            Sin contar
-                          </p>
-                        )}
                       </li>
                     ))}
                   </ul>

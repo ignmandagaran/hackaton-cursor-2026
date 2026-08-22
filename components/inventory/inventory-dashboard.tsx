@@ -3,12 +3,9 @@
 import { useState } from "react"
 import { useTranslations } from "next-intl"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import type { InventoryStatusStats } from "@/components/inventory/reconciliation-summary"
 import type { CurrentStock } from "@/lib/inventory/stock"
 import type { RecentMovement } from "@/lib/inventory/movements"
-import type {
-  ReconciliationSummary,
-  StockReconciliation,
-} from "@/lib/inventory/reconciliation"
 import type {
   LotHistoryOption,
   LotStockHistory,
@@ -17,20 +14,18 @@ import { OverviewTab } from "./overview-tab"
 import { MovementsTab } from "./movements-tab"
 
 type InventoryDashboardProps = {
-  summary: ReconciliationSummary
   currentStock: CurrentStock[]
-  reconciliation: StockReconciliation[]
   recentMovements: RecentMovement[]
+  stats: InventoryStatusStats
   lots: LotHistoryOption[]
   stockHistories: LotStockHistory[]
   defaultLotId: number | null
 }
 
 export function InventoryDashboard({
-  summary,
   currentStock,
-  reconciliation,
   recentMovements,
+  stats,
   lots,
   stockHistories,
   defaultLotId,
@@ -52,10 +47,9 @@ export function InventoryDashboard({
 
         <TabsContent value="overview" className="mt-6">
           <OverviewTab
-            summary={summary}
             stock={currentStock}
-            reconciliation={reconciliation}
             recentMovements={recentMovements}
+            stats={stats}
             lots={lots}
             stockHistories={stockHistories}
             defaultLotId={defaultLotId}

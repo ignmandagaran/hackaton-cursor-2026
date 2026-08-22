@@ -1,34 +1,30 @@
 import { CurrentStockView } from "@/components/inventory/current-stock"
-import { DiscrepanciesSection } from "@/components/inventory/discrepancies-section"
+import {
+  InventoryStatusCards,
+  type InventoryStatusStats,
+} from "@/components/inventory/reconciliation-summary"
 import { RecentMovementsView } from "@/components/inventory/recent-movements"
-import { ReconciliationSummaryCards } from "@/components/inventory/reconciliation-summary"
 import { StockHistoryChart } from "@/components/inventory/stock-history-chart"
 import type { CurrentStock } from "@/lib/inventory/stock"
 import type { RecentMovement } from "@/lib/inventory/movements"
-import type {
-  ReconciliationSummary,
-  StockReconciliation,
-} from "@/lib/inventory/reconciliation"
 import type {
   LotHistoryOption,
   LotStockHistory,
 } from "@/lib/inventory/stock-history"
 
 type OverviewTabProps = {
-  summary: ReconciliationSummary
   stock: CurrentStock[]
-  reconciliation: StockReconciliation[]
   recentMovements: RecentMovement[]
+  stats: InventoryStatusStats
   lots: LotHistoryOption[]
   stockHistories: LotStockHistory[]
   defaultLotId: number | null
 }
 
 export function OverviewTab({
-  summary,
   stock,
-  reconciliation,
   recentMovements,
+  stats,
   lots,
   stockHistories,
   defaultLotId,
@@ -39,7 +35,7 @@ export function OverviewTab({
         <h2 className="mb-3 font-heading font-medium text-lg">
           Estado de inventario
         </h2>
-        <ReconciliationSummaryCards summary={summary} />
+        <InventoryStatusCards stats={stats} />
       </section>
 
       <StockHistoryChart
@@ -48,21 +44,12 @@ export function OverviewTab({
         defaultLotId={defaultLotId}
       />
 
-      <div className="grid gap-6 lg:grid-cols-[minmax(0,1.85fr)_minmax(0,1fr)]">
-        <section>
-          <h2 className="mb-3 font-heading font-medium text-lg">
-            Stock por ubicación
-          </h2>
-          <CurrentStockView stock={stock} reconciliation={reconciliation} />
-        </section>
-
-        <section>
-          <h2 className="mb-3 font-heading font-medium text-lg">
-            Discrepancias
-          </h2>
-          <DiscrepanciesSection entries={reconciliation} variant="panel" />
-        </section>
-      </div>
+      <section>
+        <h2 className="mb-3 font-heading font-medium text-lg">
+          Stock por ubicación
+        </h2>
+        <CurrentStockView stock={stock} />
+      </section>
 
       <section>
         <RecentMovementsView

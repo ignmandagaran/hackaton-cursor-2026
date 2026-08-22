@@ -10,7 +10,6 @@ import {
   type MovementType,
 } from "@/db/schema"
 import { getAvailableStock } from "@/lib/inventory/stock"
-import { getLotReconciliation } from "@/lib/inventory/reconciliation"
 
 export type LotDetails = {
   id: number
@@ -24,10 +23,6 @@ export type LotDetails = {
     locationId: number
     locationName: string
     quantityKg: number
-    expectedKg: number
-    countedKg: number | null
-    differenceKg: number | null
-    status: "VERIFIED" | "DISCREPANCY" | "NOT_COUNTED"
   }[]
   recentMovements: {
     id: number
@@ -74,22 +69,6 @@ export function getLotDetails(lotId: number): LotDetails | null {
     }))
     .filter((entry) => entry.quantityKg !== 0)
 
-  const reconciliation = getLotReconciliation(lotId)
-  const reconciliationByLocation = new Map(
-    reconciliation.map((entry) => [entry.locationId, entry])
-  )
-
-  const stockByLocationWithReconciliation = stockByLocation.map((entry) => {
-    const rec = reconciliationByLocation.get(entry.locationId)
-    return {
-      ...entry,
-      expectedKg: rec?.expectedKg ?? entry.quantityKg,
-      countedKg: rec?.countedKg ?? null,
-      differenceKg: rec?.differenceKg ?? null,
-      status: rec?.status ?? "NOT_COUNTED",
-    }
-  })
-
   const totalStockKg = Math.round(
     stockByLocation.reduce((sum, entry) => sum + entry.quantityKg, 0) * 100
   ) / 100
@@ -127,7 +106,7 @@ export function getLotDetails(lotId: number): LotDetails | null {
       name: lot.varietyName,
     },
     totalStockKg,
-    stockByLocation: stockByLocationWithReconciliation,
+    stockByLocation,
     recentMovements,
   }
 }
