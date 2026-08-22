@@ -8,6 +8,7 @@ const nextConfig: NextConfig = {
   reactStrictMode: true,
   reactCompiler: true,
   typedRoutes: true,
+  allowedDevOrigins: ["127.0.0.1", "localhost"],
   turbopack: {
     rules: {
       "*.svg": {

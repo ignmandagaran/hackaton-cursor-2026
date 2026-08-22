@@ -9,6 +9,10 @@ import type {
   ReconciliationSummary,
   StockReconciliation,
 } from "@/lib/inventory/reconciliation"
+import type {
+  LotHistoryOption,
+  LotStockHistory,
+} from "@/lib/inventory/stock-history"
 import { OverviewTab } from "./overview-tab"
 import { MovementsTab } from "./movements-tab"
 
@@ -17,6 +21,9 @@ type InventoryDashboardProps = {
   currentStock: CurrentStock[]
   reconciliation: StockReconciliation[]
   recentMovements: RecentMovement[]
+  lots: LotHistoryOption[]
+  stockHistories: LotStockHistory[]
+  defaultLotId: number | null
 }
 
 export function InventoryDashboard({
@@ -24,6 +31,9 @@ export function InventoryDashboard({
   currentStock,
   reconciliation,
   recentMovements,
+  lots,
+  stockHistories,
+  defaultLotId,
 }: InventoryDashboardProps) {
   const t = useTranslations("home")
   const [tab, setTab] = useState("overview")
@@ -46,6 +56,9 @@ export function InventoryDashboard({
             stock={currentStock}
             reconciliation={reconciliation}
             recentMovements={recentMovements}
+            lots={lots}
+            stockHistories={stockHistories}
+            defaultLotId={defaultLotId}
           />
         </TabsContent>
 

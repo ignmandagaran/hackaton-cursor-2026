@@ -93,19 +93,64 @@ export function seedDatabase() {
     }
 
     const now = new Date().toISOString()
+    const demoAt = (time: string) => `2026-08-22T${time}:00-03:00`
 
     db.insert(movements)
       .values([
         {
-          createdAt: now,
+          createdAt: demoAt("09:00"),
           type: "INITIAL_BALANCE",
           lotId: lot224.id,
           originLocationId: null,
           destinationLocationId: frio1.id,
-          quantityKg: 100,
+          quantityKg: 1240,
           rawInput: null,
           source: "MANUAL",
           notes: "Saldo inicial demo",
+        },
+        {
+          createdAt: demoAt("10:00"),
+          type: "TRANSFER",
+          lotId: lot224.id,
+          originLocationId: frio1.id,
+          destinationLocationId: galpon.id,
+          quantityKg: 200,
+          rawInput: null,
+          source: "MANUAL",
+          notes: "Transferencia demo",
+        },
+        {
+          createdAt: demoAt("11:30"),
+          type: "TRANSFER",
+          lotId: lot224.id,
+          originLocationId: frio1.id,
+          destinationLocationId: frio2.id,
+          quantityKg: 100,
+          rawInput: null,
+          source: "MANUAL",
+          notes: "Transferencia demo",
+        },
+        {
+          createdAt: demoAt("13:00"),
+          type: "ADJUSTMENT",
+          lotId: lot224.id,
+          originLocationId: null,
+          destinationLocationId: frio1.id,
+          quantityKg: 50,
+          rawInput: null,
+          source: "MANUAL",
+          notes: "Ajuste demo",
+        },
+        {
+          createdAt: demoAt("14:30"),
+          type: "TRANSFER",
+          lotId: lot224.id,
+          originLocationId: galpon.id,
+          destinationLocationId: frio2.id,
+          quantityKg: 50,
+          rawInput: null,
+          source: "MANUAL",
+          notes: "Transferencia demo",
         },
         {
           createdAt: now,

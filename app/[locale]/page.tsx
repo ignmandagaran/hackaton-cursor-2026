@@ -7,6 +7,11 @@ import {
   getStockReconciliation,
 } from "@/lib/inventory/reconciliation"
 import { getCurrentStock } from "@/lib/inventory/stock"
+import {
+  getAllLotStockHistories,
+  getDefaultStockHistoryLotId,
+  getLotHistoryOptions,
+} from "@/lib/inventory/stock-history"
 
 export default async function Home({
   params,
@@ -20,6 +25,9 @@ export default async function Home({
   const recentMovements = getRecentMovements()
   const reconciliation = getStockReconciliation()
   const summary = getReconciliationSummary()
+  const lots = getLotHistoryOptions()
+  const stockHistories = getAllLotStockHistories()
+  const defaultLotId = getDefaultStockHistoryLotId(lots)
 
   return (
     <Wrapper>
@@ -30,6 +38,9 @@ export default async function Home({
             currentStock={currentStock}
             reconciliation={reconciliation}
             recentMovements={recentMovements}
+            lots={lots}
+            stockHistories={stockHistories}
+            defaultLotId={defaultLotId}
           />
         </div>
       </section>
