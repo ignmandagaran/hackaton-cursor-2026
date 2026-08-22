@@ -16,5 +16,7 @@ export function RelativeTime({
     setLabel(formatRelativeTime(isoDate, locale))
   }, [isoDate, locale])
 
-  return <span suppressHydrationWarning>{label ?? "\u00a0"}</span>
+  if (!label) return null
+
+  return <span>{label}</span>
 }

@@ -1,0 +1,12 @@
+Actualmente el sistema de carga se realiza a través de planillas de Excel,
+las cuales pueden conllevar errores durante el proceso de carga o 
+contener discrepancias en relación al stock actual
+
+Nuestra propuesta simplifica el registro de movimientos en el stock, permitiendo a los operadores
+ingresar el número de lote, la variedad, la cantidad a transportar y el destino
+Utilizando un modelo de análisis, se interpreta la entrada del usuario y se corrobora
+con los datos existentes en la base de datos
+
+Así mismo, entendiendo la dificultad de escribir estos datos desde un dispositivo móvil,
+también implementamos un modelo de Voz a Texto para facilitar la carga de estos datos, de modo más rápido
+

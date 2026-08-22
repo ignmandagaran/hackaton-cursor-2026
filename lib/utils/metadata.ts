@@ -89,7 +89,7 @@ export function generatePageMetadata(
       description,
       url: fullUrl,
       siteName,
-      locale: "en_US",
+      locale: "es_AR",
       type,
       ...(images && { images }),
       ...(publishedTime && { publishedTime }),
