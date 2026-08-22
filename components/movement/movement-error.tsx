@@ -1,41 +1,90 @@
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+import { Button } from "@/components/ui/button"
+import { formatKg } from "@/lib/inventory/format-kg"
+import type { MovementError } from "@/lib/inventory/types"
 
 export function MovementErrorView({
   error,
+  onEdit,
 }: {
-  error: {
-    message: string
-    details?: Record<string, string | number> | undefined
+  error: Pick<MovementError, "message" | "details"> & {
+    code?: MovementError["code"]
   }
+  onEdit?: () => void
 }) {
   const details = error.details
-  const isInsufficientStock =
-    details &&
-    "requested" in details &&
-    "available" in details &&
-    "lotCode" in details &&
-    "origin" in details
+  const isInsufficientStock = error.code === "INSUFFICIENT_STOCK" && details
+  const isAmbiguous =
+    (error.code === "AMBIGUOUS_ORIGIN" ||
+      error.code === "AMBIGUOUS_DESTINATION") &&
+    details?.matches
+  const isMissingInfo =
+    error.code === "PARSE_ERROR" && details?.missing === "lote, cantidad en kg, origen, destino"
+  const isLotNotFound = error.code === "LOT_NOT_FOUND"
+  const isLocationNotFound =
+    error.code === "ORIGIN_NOT_FOUND" || error.code === "DESTINATION_NOT_FOUND"
+
+  const title = isInsufficientStock
+    ? "Stock insuficiente"
+    : error.message.split("\n")[0]
 
   return (
     <Alert variant="destructive">
-      <AlertTitle>{error.message}</AlertTitle>
+      <AlertTitle>{title}</AlertTitle>
       <AlertDescription>
-        {isInsufficientStock ? (
-          <div className="mt-1 space-y-1">
+        {isInsufficientStock && details ? (
+          <div className="mt-2 space-y-1">
             <p>
-              Solicitado:{" "}
-              {Number(details.requested).toLocaleString("es-AR")} kg
+              Querés mover{" "}
+              <span className="font-medium tabular-nums">
+                {formatKg(Number(details.requested))}
+              </span>
             </p>
             <p>
-              Disponible:{" "}
-              {Number(details.available).toLocaleString("es-AR")} kg
+              Disponible{" "}
+              <span className="font-medium tabular-nums">
+                {formatKg(Number(details.available))}
+              </span>
             </p>
-            <p>
+            <p className="text-muted-foreground">
               Lote {String(details.lotCode)} · {String(details.origin)}
             </p>
           </div>
-        ) : details?.matches ? (
-          <p className="mt-1">Coincidencias: {String(details.matches)}</p>
+        ) : isMissingInfo ? (
+          <div className="mt-2 space-y-2">
+            <p>Necesitamos:</p>
+            <ul className="list-inside list-disc space-y-0.5">
+              <li>lote</li>
+              <li>cantidad en kg</li>
+              <li>origen</li>
+              <li>destino</li>
+            </ul>
+          </div>
+        ) : isLotNotFound ? (
+          <p className="mt-1">
+            Revisá el número de lote e intentá nuevamente.
+          </p>
+        ) : isLocationNotFound ? (
+          <p className="mt-1">Revisá el nombre de la ubicación.</p>
+        ) : isAmbiguous ? (
+          <p className="mt-1">
+            Coincidencias posibles: {String(details.matches)}
+          </p>
+        ) : error.message.includes("\n") ? (
+          <p className="mt-1 whitespace-pre-line">
+            {error.message.split("\n").slice(1).join("\n").trim()}
+          </p>
+        ) : null}
+
+        {onEdit ? (
+          <Button
+            variant="outline"
+            size="sm"
+            className="mt-3"
+            onClick={onEdit}
+          >
+            Editar movimiento
+          </Button>
         ) : null}
       </AlertDescription>
     </Alert>

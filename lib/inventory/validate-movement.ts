@@ -52,12 +52,22 @@ export function validateMovement(
   const stockAfter =
     Math.round((availableStock - resolved.quantityKg) * 100) / 100
 
+  const destinationStock = getAvailableStock({
+    lotId: resolved.lotId,
+    locationId: resolved.destinationId,
+  })
+
+  const destinationStockAfter =
+    Math.round((destinationStock + resolved.quantityKg) * 100) / 100
+
   return {
     ok: true,
     data: {
       ...resolved,
       availableStock,
       stockAfter,
+      destinationStock,
+      destinationStockAfter,
     },
   }
 }

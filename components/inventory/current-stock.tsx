@@ -5,10 +5,7 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 import type { CurrentStock } from "@/lib/inventory/stock"
-
-function formatKg(value: number): string {
-  return `${value.toLocaleString("es-AR")} kg`
-}
+import { formatKg } from "@/lib/inventory/format-kg"
 
 export function CurrentStockView({ stock }: { stock: CurrentStock[] }) {
   if (stock.length === 0) {

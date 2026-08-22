@@ -127,7 +127,7 @@ export function resolveMovementEntities(
       ok: false,
       error: {
         code: "LOT_NOT_FOUND",
-        message: `No encontramos el lote "${parsed.lotCode}".`,
+        message: `No encontramos el lote ${parsed.lotCode}.`,
       },
     }
   }

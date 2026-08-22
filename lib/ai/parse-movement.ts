@@ -84,22 +84,23 @@ Reglas estrictas:
         ok: false,
         error: {
           code: "PARSE_ERROR",
-          message:
-            "No pudimos interpretar el movimiento. Verificá lote, cantidad, origen y destino.",
+          message: "Falta información para registrar el movimiento.",
+          details: {
+            missing: "lote, cantidad en kg, origen, destino",
+          },
         },
       }
     }
 
     return { ok: true, data: parsed.data }
   } catch (error) {
+    console.error("[parseMovement]", error)
     return {
       ok: false,
       error: {
         code: "PARSE_ERROR",
         message:
-          error instanceof Error
-            ? error.message
-            : "Error al interpretar el movimiento con Gemini.",
+          "No pudimos interpretar el movimiento.\n\nIntentá nuevamente en unos segundos.",
       },
     }
   }

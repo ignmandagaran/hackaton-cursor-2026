@@ -25,6 +25,8 @@ export type ResolvedMovement = {
 export type ValidatedMovement = ResolvedMovement & {
   availableStock: number
   stockAfter: number
+  destinationStock: number
+  destinationStockAfter: number
 }
 
 export type CreatedMovement = {

@@ -1,9 +1,6 @@
 import { formatRelativeTime } from "@/lib/inventory/format-relative-time"
+import { formatKg } from "@/lib/inventory/format-kg"
 import type { RecentMovement } from "@/lib/inventory/movements"
-
-function formatKg(value: number): string {
-  return `${value.toLocaleString("es-AR")} kg`
-}
 
 function formatRoute(movement: RecentMovement): string {
   const origin =
