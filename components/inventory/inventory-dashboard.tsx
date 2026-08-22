@@ -3,27 +3,22 @@
 import { useState } from "react"
 import { useTranslations } from "next-intl"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import type { InventoryStatusStats } from "@/components/inventory/reconciliation-summary"
 import type { CurrentStock } from "@/lib/inventory/stock"
 import type { RecentMovement } from "@/lib/inventory/movements"
-import type {
-  ReconciliationSummary,
-  StockReconciliation,
-} from "@/lib/inventory/reconciliation"
 import { OverviewTab } from "./overview-tab"
 import { MovementsTab } from "./movements-tab"
 
 type InventoryDashboardProps = {
-  summary: ReconciliationSummary
   currentStock: CurrentStock[]
-  reconciliation: StockReconciliation[]
   recentMovements: RecentMovement[]
+  stats: InventoryStatusStats
 }
 
 export function InventoryDashboard({
-  summary,
   currentStock,
-  reconciliation,
   recentMovements,
+  stats,
 }: InventoryDashboardProps) {
   const t = useTranslations("home")
   const [tab, setTab] = useState("overview")
@@ -42,10 +37,9 @@ export function InventoryDashboard({
 
         <TabsContent value="overview" className="mt-6">
           <OverviewTab
-            summary={summary}
             stock={currentStock}
-            reconciliation={reconciliation}
             recentMovements={recentMovements}
+            stats={stats}
           />
         </TabsContent>
 

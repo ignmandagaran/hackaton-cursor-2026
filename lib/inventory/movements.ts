@@ -1,4 +1,4 @@
-import { desc, eq } from "drizzle-orm"
+import { and, desc, eq, gte, isNull } from "drizzle-orm"
 import { alias } from "drizzle-orm/sqlite-core"
 import { getDb } from "@/db"
 import {
@@ -8,6 +8,7 @@ import {
   varieties,
   type MovementType,
 } from "@/db/schema"
+import { roundKg } from "@/lib/inventory/kg-tolerance"
 
 export type RecentMovement = {
   id: number
@@ -57,4 +58,26 @@ export function getRecentMovements(limit = 10): RecentMovement[] {
 
 export function getAllMovements(): RecentMovement[] {
   return buildMovementsQuery().all()
+}
+
+export type MovementActivity = {
+  movementCount: number
+  movedKg: number
+}
+
+export function getMovementActivitySince(sinceIso: string): MovementActivity {
+  const db = getDb()
+
+  const rows = db
+    .select({
+      quantityKg: movements.quantityKg,
+    })
+    .from(movements)
+    .where(and(isNull(movements.deletedAt), gte(movements.createdAt, sinceIso)))
+    .all()
+
+  return {
+    movementCount: rows.length,
+    movedKg: roundKg(rows.reduce((sum, row) => sum + row.quantityKg, 0)),
+  }
 }
