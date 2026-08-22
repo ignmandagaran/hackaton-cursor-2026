@@ -1,32 +1,58 @@
-derDiagram
-    VARIETY ||--o{ LOT : has
-    LOT ||--o{ MOVEMENT : moves
-    LOCATION ||--o{ MOVEMENT : origin
-    LOCATION ||--o{ MOVEMENT : destination
-
-    VARIETY {
+erDiagram
+    VARIETIES {
         integer id PK
         text name
     }
 
-    LOT {
+    LOTS {
         integer id PK
-        text code
+        text code UK
         integer variety_id FK
     }
 
-    LOCATION {
+    LOCATIONS {
         integer id PK
-        text name
-        text type
+        text name UK
+        text type "COLD_STORAGE | WAREHOUSE | OTHER"
     }
 
-    MOVEMENT {
+    LOCATION_ALIASES {
         integer id PK
-        datetime date
-        integer lot_id FK
-        integer origin_location_id FK
-        integer destination_location_id FK
-        real quantity_kg
-        text raw_input
+        integer location_id FK
+        text alias UK
     }
+
+    STOCK_COUNTS {
+        integer id PK
+        integer lot_id FK
+        integer location_id FK
+        real quantity_kg
+        text counted_at
+        text notes "nullable"
+        text created_at
+    }
+
+    MOVEMENTS {
+        integer id PK
+        text created_at
+        text type "INITIAL_BALANCE | TRANSFER | ADJUSTMENT"
+        integer lot_id FK
+        integer origin_location_id FK "nullable"
+        integer destination_location_id FK "nullable"
+        real quantity_kg
+        text raw_input "nullable"
+        text source "NATURAL_LANGUAGE | MANUAL | IMPORT"
+        text notes "nullable"
+        integer stock_count_id FK "nullable"
+    }
+
+    VARIETIES ||--o{ LOTS : has
+    LOTS ||--o{ STOCK_COUNTS : counted_in
+    LOCATIONS ||--o{ STOCK_COUNTS : has
+    LOCATIONS ||--o{ LOCATION_ALIASES : has
+    LOTS ||--o{ MOVEMENTS : moves
+
+    LOCATIONS o|--o{ MOVEMENTS : origin
+    LOCATIONS o|--o{ MOVEMENTS : destination
+
+    STOCK_COUNTS o|--o{ MOVEMENTS : generates
