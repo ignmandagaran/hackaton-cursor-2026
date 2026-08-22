@@ -1,7 +1,7 @@
 {
   "common": { "skipToMain": "Saltar al contenido principal" },
   "home": {
-    "title": "App",
+    "title": "Papasud Stock Control",
     "inventoryTitle": "Inventario",
     "tabOverview": "Resumen",
     "tabOperations": "Operaciones",
@@ -18,7 +18,7 @@
     "switchToDark": "Cambiar a tema oscuro"
   },
   "metadata": {
-    "title": "App",
-    "description": "Una plantilla moderna de Next.js."
+    "title": "Papasud Stock Control",
+    "description": "Control de stock de papa semilla."
   }
 }

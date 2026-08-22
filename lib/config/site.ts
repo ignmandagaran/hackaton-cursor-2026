@@ -8,11 +8,11 @@
  */
 export const siteConfig = {
   /** Full display name. Used in titles, JSON-LD, and the OG image. */
-  name: "App",
+  name: "Papasud Stock Control",
   /** Short wordmark for compact UI (header/footer). */
-  shortName: "App",
+  shortName: "Papasud Stock Control",
   /** Default description for metadata + JSON-LD. */
-  description: "A modern Next.js starter template.",
+  description: "Control de stock de papa semilla.",
   /** Public base URL. Overridden in any environment by NEXT_PUBLIC_BASE_URL. */
   url: process.env.NEXT_PUBLIC_BASE_URL ?? "http://localhost:3000",
 } as const

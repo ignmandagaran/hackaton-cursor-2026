@@ -1,7 +1,7 @@
 {
   "common": { "skipToMain": "Skip to main content" },
   "home": {
-    "title": "App",
+    "title": "Papasud Stock Control",
     "inventoryTitle": "Inventory",
     "tabOverview": "Overview",
     "tabOperations": "Operations",
@@ -18,7 +18,7 @@
     "switchToDark": "Switch to dark theme"
   },
   "metadata": {
-    "title": "App",
-    "description": "A modern Next.js starter template."
+    "title": "Papasud Stock Control",
+    "description": "Seed potato stock control."
   }
 }
