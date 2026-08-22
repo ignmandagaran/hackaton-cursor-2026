@@ -5,6 +5,7 @@ import {
   locations,
   lots,
   movements,
+  stockCounts,
   varieties,
 } from "@/db/schema"
 
@@ -127,6 +128,22 @@ export function seedDatabase() {
           rawInput: null,
           source: "MANUAL",
           notes: "Saldo inicial demo",
+        },
+      ])
+      .run()
+
+    const countTime = new Date().toISOString()
+
+    // Scenario A: exact match (Lote 241 · Frigorífico 2)
+    db.insert(stockCounts)
+      .values([
+        {
+          lotId: lot241.id,
+          locationId: frio2.id,
+          quantityKg: 800,
+          countedAt: countTime,
+          notes: "Conteo exacto demo",
+          createdAt: countTime,
         },
       ])
       .run()

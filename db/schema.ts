@@ -52,3 +52,17 @@ export const movements = sqliteTable("movements", {
   source: text("source").$type<MovementSource>().notNull(),
   notes: text("notes"),
 })
+
+export const stockCounts = sqliteTable("stock_counts", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  lotId: integer("lot_id")
+    .notNull()
+    .references(() => lots.id),
+  locationId: integer("location_id")
+    .notNull()
+    .references(() => locations.id),
+  quantityKg: real("quantity_kg").notNull(),
+  countedAt: text("counted_at").notNull(),
+  notes: text("notes"),
+  createdAt: text("created_at").notNull(),
+})
