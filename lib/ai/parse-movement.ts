@@ -9,7 +9,7 @@ import {
 const BAG_PATTERN = /\b(bolsas?|bolsón|bolsones|sacos?)\b/i
 
 function getGeminiModel() {
-  return process.env.GEMINI_MODEL ?? "gemini-2.0-flash"
+  return process.env.GEMINI_MODEL ?? "gemini-3.6-flash"
 }
 
 function getApiKey(): string {
