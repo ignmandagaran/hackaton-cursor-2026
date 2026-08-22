@@ -83,7 +83,7 @@ export function CurrentStockView({
   )
 
   return (
-    <div className="grid gap-4 sm:grid-cols-2">
+    <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-2 2xl:grid-cols-4">
       {stock.map((location) => {
         const locationEntries = reconciliation.filter(
           (entry) => entry.locationId === location.locationId
@@ -102,8 +102,8 @@ export function CurrentStockView({
               </p>
               <LocationStatusSummary entries={locationEntries} />
             </CardHeader>
-            <CardContent>
-              <ul className="flex flex-col gap-2">
+            <CardContent className="pt-3">
+              <ul className="flex flex-col gap-1.5">
                 {location.lots.map((lot) => {
                   const entry = reconciliationByKey.get(
                     `${lot.lotId}-${location.locationId}`

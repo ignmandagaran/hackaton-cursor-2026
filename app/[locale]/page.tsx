@@ -1,11 +1,6 @@
-import { getTranslations, setRequestLocale } from "next-intl/server"
-import { CurrentStockView } from "@/components/inventory/current-stock"
-import { DiscrepanciesSection } from "@/components/inventory/discrepancies-section"
-import { RecentMovementsView } from "@/components/inventory/recent-movements"
-import { ReconciliationSummaryCards } from "@/components/inventory/reconciliation-summary"
-import { StockCountForm } from "@/components/inventory/stock-count-form"
+import { setRequestLocale } from "next-intl/server"
+import { InventoryDashboard } from "@/components/inventory/inventory-dashboard"
 import { Wrapper } from "@/components/layout/wrapper"
-import { MovementForm } from "@/components/movement/movement-form"
 import { getStockCountOptions } from "@/lib/actions/stock-count"
 import { getRecentMovements } from "@/lib/inventory/movements"
 import {
@@ -21,7 +16,6 @@ export default async function Home({
 }) {
   const { locale } = await params
   setRequestLocale(locale)
-  const t = await getTranslations("home")
 
   const currentStock = getCurrentStock()
   const recentMovements = getRecentMovements()
@@ -31,60 +25,15 @@ export default async function Home({
 
   return (
     <Wrapper>
-      <section className="flex grow flex-col items-center px-4 py-10">
-        <div className="flex w-full max-w-xl flex-col gap-12">
-          <div>
-            <div className="mb-8 text-center">
-              <h1 className="font-heading font-medium text-2xl">
-                {t("movementTitle")}
-              </h1>
-              <p className="mt-2 text-muted-foreground text-sm">
-                {t("movementSubtitle")}
-              </p>
-            </div>
-            <MovementForm />
-          </div>
-
-          <div>
-            <h2 className="mb-4 font-heading font-medium text-xl">
-              {t("inventoryStatusTitle")}
-            </h2>
-            <ReconciliationSummaryCards summary={summary} />
-          </div>
-
-          <div>
-            <h2 className="mb-4 font-heading font-medium text-xl">
-              {t("currentStockTitle")}
-            </h2>
-            <CurrentStockView
-              stock={currentStock}
-              reconciliation={reconciliation}
-            />
-          </div>
-
-          <div>
-            <h2 className="mb-4 font-heading font-medium text-xl">
-              {t("discrepanciesTitle")}
-            </h2>
-            <DiscrepanciesSection entries={reconciliation} />
-          </div>
-
-          <div>
-            <h2 className="mb-4 font-heading font-medium text-xl">
-              {t("registerCountTitle")}
-            </h2>
-            <StockCountForm
-              lots={countOptions.lots}
-              locations={countOptions.locations}
-            />
-          </div>
-
-          <div>
-            <h2 className="mb-4 font-heading font-medium text-xl">
-              {t("recentMovementsTitle")}
-            </h2>
-            <RecentMovementsView movements={recentMovements} />
-          </div>
+      <section className="flex grow flex-col px-4 py-8">
+        <div className="mx-auto w-full max-w-6xl">
+          <InventoryDashboard
+            summary={summary}
+            currentStock={currentStock}
+            reconciliation={reconciliation}
+            recentMovements={recentMovements}
+            countOptions={countOptions}
+          />
         </div>
       </section>
     </Wrapper>

@@ -2,6 +2,10 @@
   "common": { "skipToMain": "Skip to main content" },
   "home": {
     "title": "App",
+    "inventoryTitle": "Inventory",
+    "tabOverview": "Overview",
+    "tabMovements": "Movements",
+    "tabCounts": "Counts",
     "movementTitle": "Register movement",
     "movementSubtitle": "Describe stock transfers in natural language",
     "inventoryStatusTitle": "Inventory status",

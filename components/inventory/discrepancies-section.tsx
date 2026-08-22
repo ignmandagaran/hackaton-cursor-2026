@@ -10,16 +10,26 @@ function formatDifference(value: number): string {
 
 export function DiscrepanciesSection({
   entries,
+  variant = "default",
 }: {
   entries: StockReconciliation[]
+  variant?: "default" | "panel"
 }) {
   const discrepancies = entries.filter((entry) => entry.status === "DISCREPANCY")
 
   if (discrepancies.length === 0) {
     return (
-      <p className="text-muted-foreground text-sm">
-        No hay diferencias detectadas entre el sistema y los conteos físicos.
-      </p>
+      <div
+        className={cn(
+          variant === "panel" &&
+            "rounded-4xl bg-card p-4 shadow-md ring-1 ring-foreground/5"
+        )}
+      >
+        <p className="font-medium text-sm">No hay discrepancias detectadas</p>
+        <p className="mt-1 text-muted-foreground text-xs">
+          Los conteos físicos coinciden con el inventario esperado.
+        </p>
+      </div>
     )
   }
 
@@ -28,7 +38,11 @@ export function DiscrepanciesSection({
       {discrepancies.map((entry) => (
         <li
           key={`${entry.lotId}-${entry.locationId}`}
-          className="rounded-4xl bg-card px-5 py-4 shadow-md ring-1 ring-foreground/5"
+          className={cn(
+            variant === "panel"
+              ? "rounded-4xl bg-card px-4 py-3 shadow-md ring-1 ring-foreground/5"
+              : "rounded-4xl bg-card px-5 py-4 shadow-md ring-1 ring-foreground/5"
+          )}
         >
           <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
             <div>
@@ -70,9 +84,11 @@ export function DiscrepanciesSection({
                   </dd>
                 </div>
               </dl>
-              <p className="mt-2 text-muted-foreground text-xs">
-                Diferencia calculada desde inventario
-              </p>
+              {variant === "default" ? (
+                <p className="mt-2 text-muted-foreground text-xs">
+                  Diferencia calculada desde inventario
+                </p>
+              ) : null}
             </div>
             <DiscrepancyDetailDrawer
               lotId={entry.lotId}
