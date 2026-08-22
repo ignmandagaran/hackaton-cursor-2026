@@ -1,4 +1,4 @@
-import { and, asc, desc, eq, or } from "drizzle-orm"
+import { and, asc, desc, eq, isNull, or } from "drizzle-orm"
 import { alias } from "drizzle-orm/sqlite-core"
 import { getDb } from "@/db"
 import {
@@ -241,6 +241,7 @@ export function getDiscrepancyEvidence({
     .where(
       and(
         eq(movements.lotId, lotId),
+        isNull(movements.deletedAt),
         or(
           eq(movements.originLocationId, locationId),
           eq(movements.destinationLocationId, locationId)

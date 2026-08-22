@@ -1,9 +1,9 @@
 "use server"
 
-import { revalidatePath } from "next/cache"
 import { parseMovement } from "@/lib/ai/parse-movement"
-import { routing } from "@/i18n/routing"
 import { createMovement } from "@/lib/inventory/create-movement"
+import { softDeleteMovement } from "@/lib/inventory/delete-movement"
+import { revalidateInventoryPaths } from "@/lib/inventory/revalidate-inventory"
 import { resolveMovementEntities } from "@/lib/inventory/resolve-movement"
 import type {
   CreatedMovement,
@@ -33,6 +33,10 @@ export type ConfirmPayload = {
 
 export type ConfirmResult =
   | { ok: true; result: CreatedMovement }
+  | { ok: false; error: MovementError }
+
+export type DeleteMovementResult =
+  | { ok: true }
   | { ok: false; error: MovementError }
 
 export async function interpretMovement(
@@ -76,10 +80,18 @@ export async function confirmMovement(
   const created = createMovement(validated.data, payload.rawInput)
   if (!created.ok) return created
 
-  for (const locale of routing.locales) {
-    const path = locale === routing.defaultLocale ? "/" : `/${locale}`
-    revalidatePath(path)
-  }
+  revalidateInventoryPaths()
 
   return { ok: true, result: created.data }
+}
+
+export async function deleteMovement(
+  id: number
+): Promise<DeleteMovementResult> {
+  const result = softDeleteMovement(id)
+  if (!result.ok) return result
+
+  revalidateInventoryPaths()
+
+  return { ok: true }
 }

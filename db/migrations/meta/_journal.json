@@ -15,6 +15,13 @@
       "when": 1787420110473,
       "tag": "0001_magenta_northstar",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1787421293886,
+      "tag": "0002_lucky_killraven",
+      "breakpoints": true
     }
   ]
 }

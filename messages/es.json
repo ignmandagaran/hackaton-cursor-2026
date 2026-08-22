@@ -8,7 +8,21 @@
     "currentStockTitle": "Stock por ubicación",
     "discrepanciesTitle": "Discrepancias",
     "registerCountTitle": "Registrar conteo",
-    "recentMovementsTitle": "Últimos movimientos"
+    "recentMovementsTitle": "Últimos movimientos",
+    "viewAllMovements": "Ver todos"
+  },
+  "movements": {
+    "title": "Todos los movimientos",
+    "back": "Volver",
+    "empty": "Sin movimientos registrados.",
+    "deleted": "Eliminado",
+    "deleteAriaLabel": "Eliminar movimiento",
+    "deleteTitle": "¿Eliminar movimiento?",
+    "deleteDescription": "Esta acción es irreversible. El movimiento seguirá visible como eliminado y el stock se revertirá en el origen.",
+    "deleteCancel": "Cancelar",
+    "deleteConfirm": "Eliminar",
+    "deletePending": "Eliminando…",
+    "deleteSuccess": "Movimiento eliminado"
   },
   "theme": {
     "switchToLight": "Cambiar a tema claro",

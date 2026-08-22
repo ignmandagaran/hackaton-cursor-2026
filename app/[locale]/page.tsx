@@ -5,6 +5,7 @@ import { RecentMovementsView } from "@/components/inventory/recent-movements"
 import { ReconciliationSummaryCards } from "@/components/inventory/reconciliation-summary"
 import { StockCountForm } from "@/components/inventory/stock-count-form"
 import { Wrapper } from "@/components/layout/wrapper"
+import { Link } from "@/components/ui/link"
 import { MovementForm } from "@/components/movement/movement-form"
 import { getStockCountOptions } from "@/lib/actions/stock-count"
 import { getRecentMovements } from "@/lib/inventory/movements"
@@ -22,6 +23,7 @@ export default async function Home({
   const { locale } = await params
   setRequestLocale(locale)
   const t = await getTranslations("home")
+  const tMovements = await getTranslations("movements")
 
   const currentStock = getCurrentStock()
   const recentMovements = getRecentMovements()
@@ -80,10 +82,23 @@ export default async function Home({
           </div>
 
           <div>
-            <h2 className="mb-4 font-heading font-medium text-xl">
-              {t("recentMovementsTitle")}
-            </h2>
-            <RecentMovementsView movements={recentMovements} />
+            <div className="mb-4 flex items-center justify-between gap-3">
+              <h2 className="font-heading font-medium text-xl">
+                {t("recentMovementsTitle")}
+              </h2>
+              <Link
+                href="/movements"
+                className="text-muted-foreground text-sm underline-offset-2 hover:text-foreground hover:underline"
+              >
+                {t("viewAllMovements")}
+              </Link>
+            </div>
+            <RecentMovementsView
+              movements={recentMovements}
+              emptyMessage={tMovements("empty")}
+              deletedLabel={tMovements("deleted")}
+              locale={locale}
+            />
           </div>
         </div>
       </section>
