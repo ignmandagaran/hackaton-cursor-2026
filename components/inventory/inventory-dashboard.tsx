@@ -6,6 +6,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import type { InventoryStatusStats } from "@/components/inventory/reconciliation-summary"
 import type { CurrentStock } from "@/lib/inventory/stock"
 import type { RecentMovement } from "@/lib/inventory/movements"
+import type {
+  LotHistoryOption,
+  LotStockHistory,
+} from "@/lib/inventory/stock-history"
 import { OverviewTab } from "./overview-tab"
 import { MovementsTab } from "./movements-tab"
 
@@ -13,12 +17,18 @@ type InventoryDashboardProps = {
   currentStock: CurrentStock[]
   recentMovements: RecentMovement[]
   stats: InventoryStatusStats
+  lots: LotHistoryOption[]
+  stockHistories: LotStockHistory[]
+  defaultLotId: number | null
 }
 
 export function InventoryDashboard({
   currentStock,
   recentMovements,
   stats,
+  lots,
+  stockHistories,
+  defaultLotId,
 }: InventoryDashboardProps) {
   const t = useTranslations("home")
   const [tab, setTab] = useState("overview")
@@ -40,6 +50,9 @@ export function InventoryDashboard({
             stock={currentStock}
             recentMovements={recentMovements}
             stats={stats}
+            lots={lots}
+            stockHistories={stockHistories}
+            defaultLotId={defaultLotId}
           />
         </TabsContent>
 

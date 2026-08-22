@@ -1,12 +1,17 @@
 import { setRequestLocale } from "next-intl/server"
 import { InventoryDashboard } from "@/components/inventory/inventory-dashboard"
 import { Wrapper } from "@/components/layout/wrapper"
+import { roundKg } from "@/lib/inventory/kg-tolerance"
 import {
   getMovementActivitySince,
   getRecentMovements,
 } from "@/lib/inventory/movements"
 import { getCurrentStock } from "@/lib/inventory/stock"
-import { roundKg } from "@/lib/inventory/kg-tolerance"
+import {
+  getAllLotStockHistories,
+  getDefaultStockHistoryLotId,
+  getLotHistoryOptions,
+} from "@/lib/inventory/stock-history"
 
 export default async function Home({
   params,
@@ -28,6 +33,9 @@ export default async function Home({
       0
     )
   )
+  const lots = getLotHistoryOptions()
+  const stockHistories = getAllLotStockHistories()
+  const defaultLotId = getDefaultStockHistoryLotId(lots)
 
   return (
     <Wrapper>
@@ -42,6 +50,9 @@ export default async function Home({
               movementsLast24h: last24h.movementCount,
               movedKgLast24h: last24h.movedKg,
             }}
+            lots={lots}
+            stockHistories={stockHistories}
+            defaultLotId={defaultLotId}
           />
         </div>
       </section>
