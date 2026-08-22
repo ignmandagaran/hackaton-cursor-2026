@@ -4,7 +4,10 @@
     "title": "App",
     "movementTitle": "Registrar movimiento",
     "movementSubtitle": "Describí transferencias de stock en lenguaje natural",
-    "currentStockTitle": "Stock actual",
+    "inventoryStatusTitle": "Estado de inventario",
+    "currentStockTitle": "Stock por ubicación",
+    "discrepanciesTitle": "Discrepancias",
+    "registerCountTitle": "Registrar conteo",
     "recentMovementsTitle": "Últimos movimientos"
   },
   "theme": {

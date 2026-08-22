@@ -4,7 +4,10 @@
     "title": "App",
     "movementTitle": "Register movement",
     "movementSubtitle": "Describe stock transfers in natural language",
-    "currentStockTitle": "Current stock",
+    "inventoryStatusTitle": "Inventory status",
+    "currentStockTitle": "Stock by location",
+    "discrepanciesTitle": "Discrepancies",
+    "registerCountTitle": "Register count",
     "recentMovementsTitle": "Recent movements"
   },
   "theme": {
