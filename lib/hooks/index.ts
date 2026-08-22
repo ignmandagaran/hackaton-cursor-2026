@@ -10,3 +10,4 @@
 
 export { useDeviceDetection } from "./use-device-detection"
 export { usePrefetch } from "./use-prefetch"
+export { useSpeechRecognition } from "./use-speech-recognition"
