@@ -1,0 +1,32 @@
+derDiagram
+    VARIETY ||--o{ LOT : has
+    LOT ||--o{ MOVEMENT : moves
+    LOCATION ||--o{ MOVEMENT : origin
+    LOCATION ||--o{ MOVEMENT : destination
+
+    VARIETY {
+        integer id PK
+        text name
+    }
+
+    LOT {
+        integer id PK
+        text code
+        integer variety_id FK
+    }
+
+    LOCATION {
+        integer id PK
+        text name
+        text type
+    }
+
+    MOVEMENT {
+        integer id PK
+        datetime date
+        integer lot_id FK
+        integer origin_location_id FK
+        integer destination_location_id FK
+        real quantity_kg
+        text raw_input
+    }
