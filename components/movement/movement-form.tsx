@@ -1,12 +1,10 @@
 "use client"
 
-import { Microphone } from "@phosphor-icons/react"
 import { useRef, useState, useTransition } from "react"
 import { Button } from "@/components/ui/button"
 import {
   InputGroup,
   InputGroupAddon,
-  InputGroupButton,
   InputGroupTextarea,
 } from "@/components/ui/input-group"
 import { Spinner } from "@/components/ui/spinner"
@@ -22,6 +20,11 @@ import { cn } from "@/lib/styles/cn"
 import { MovementErrorView } from "./movement-error"
 import { MovementPreviewView } from "./movement-preview"
 import { MovementSuccessView } from "./movement-success"
+import {
+  VoiceErrorMessage,
+  VoiceInputButton,
+  VoiceListeningStatus,
+} from "./voice-input-button"
 
 const DEMO_EXAMPLE =
   "Mové 500 kg del lote 224 del Frigorífico 1 al Galpón"
@@ -41,8 +44,14 @@ export function MovementForm() {
   const [success, setSuccess] = useState<CreatedMovement | null>(null)
   const [error, setError] = useState<FormError | null>(null)
   const [isPending, startTransition] = useTransition()
-  const { isSupported: isVoiceSupported, isListening, toggleListening } =
-    useSpeechRecognition()
+  const {
+    isSupported: isVoiceSupported,
+    isListening,
+    interimTranscript,
+    voiceError,
+    clearVoiceError,
+    toggleListening,
+  } = useSpeechRecognition()
 
   const isInterpreting = step === "input" && isPending
   const isConfirming = step === "preview" && isPending
@@ -124,7 +133,7 @@ export function MovementForm() {
 
   function handleVoiceInput() {
     if (isInterpreting) return
-    setError(null)
+    clearVoiceError()
     toggleListening((transcript) => {
       if (transcript) {
         setRawText(transcript)
@@ -203,28 +212,20 @@ export function MovementForm() {
         />
         {isVoiceSupported ? (
           <InputGroupAddon align="inline-end" className="self-end pb-2">
-            <InputGroupButton
-              size="icon-sm"
-              variant={isListening ? "destructive" : "ghost"}
-              onClick={handleVoiceInput}
+            <VoiceInputButton
+              isListening={isListening}
               disabled={isInterpreting}
-              aria-label={
-                isListening ? "Dejar de escuchar" : "Dictar movimiento"
-              }
-              aria-pressed={isListening}
-            >
-              <Microphone
-                className={cn(isListening && "animate-pulse")}
-                weight={isListening ? "fill" : "regular"}
-              />
-            </InputGroupButton>
+              onClick={handleVoiceInput}
+            />
           </InputGroupAddon>
         ) : null}
       </InputGroup>
 
       {isListening ? (
-        <p className="text-muted-foreground text-sm">Escuchando…</p>
+        <VoiceListeningStatus interimTranscript={interimTranscript} />
       ) : null}
+
+      {voiceError ? <VoiceErrorMessage message={voiceError} /> : null}
 
       {isInterpreting ? (
         <div className="flex items-center gap-2 text-muted-foreground text-sm">
