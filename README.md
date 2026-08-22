@@ -1,87 +1,59 @@
-# Next.js Starter
+# Papasud — Stock Movements (N01)
 
-A modern, opinionated [Next.js](https://nextjs.org) starter template — App Router, React 19 + React Compiler, Tailwind v4, shadcn/ui, next-intl, and Biome.
+MVP for **Vertical 3 — Stock, traceability and compliance**: register seed-potato stock transfers using natural language, with deterministic inventory validation.
 
-> **Using this template?** Click **“Use this template”** on GitHub (or `gh repo create <name> --template <owner>/<repo>`), then make it yours:
->
-> 1. Edit [`lib/config/site.ts`](lib/config/site.ts) — name, description, URL.
-> 2. Update the localized strings in [`messages/en.json`](messages/en.json) and [`messages/es.json`](messages/es.json).
-> 3. Set `name` / `description` in [`package.json`](package.json).
-> 4. Copy `.env.example` to `.env.local` and fill in what you need.
+## Problem
 
-## Quick Start
+Papasud manages distributed inventory (~150 lots across 4 locations) via spreadsheets edited by multiple people, causing version conflicts, poor traceability, and late-discovered discrepancies.
 
-```bash
-bun install
-cp .env.example .env.local
-bun dev
+## MVP
+
+An operator describes a transfer in Spanish (e.g. *"Mové 500 kg del lote 224 del Frigorífico 1 al Galpón"*). Gemini extracts structured fields; SQLite remains the source of truth for stock, entities, and validation. The user previews and explicitly confirms before any write.
+
+## Architecture
+
+```
+Next.js (App Router) + TypeScript
+SQLite (better-sqlite3) + Drizzle ORM
+Gemini via Vercel AI SDK (@ai-sdk/google)
 ```
 
-Open [http://localhost:3000](http://localhost:3000). The living design system is at [http://localhost:3000/design-system](http://localhost:3000/design-system).
+Stock is derived from a **movement ledger** (`INITIAL_BALANCE`, `TRANSFER`) — no mutable `current_stock` column.
 
-## Stack
+## AI responsibility
 
-- **Next.js 16** (App Router) + **React 19** with the React Compiler enabled
-- **Bun** as the package manager and runtime
-- **Tailwind CSS v4** (CSS-based config, no `tailwind.config.*`)
-- **shadcn/ui** (`radix-luma` preset, `neutral` base, `phosphor` icons)
-- **next-intl** for i18n (`en` default, `es`)
-- **Biome** for formatting + linting
-- **tsgo** for fast typechecking
+Gemini interprets language only. It never decides stock levels, lot existence, or location validity.
+
+## Running locally
+
+```bash
+pnpm install
+cp .env.example .env.local
+# Add your GOOGLE_GENERATIVE_AI_API_KEY to .env.local
+pnpm db:migrate
+pnpm db:seed
+pnpm dev
+```
+
+Open [http://localhost:3000](http://localhost:3000).
+
+## Demo acceptance scenario
+
+1. Seed: Lot 224 has 1,240 kg at Frigorífico 1
+2. Enter: `Mové 500 kg del lote 224 del Frigorífico 1 al Galpón`
+3. Click **Interpretar** → preview shows 740 kg remaining
+4. Click **Confirmar movimiento** → transfer persisted
+5. Try moving 1,000 kg from the same lot → rejected (740 kg available)
+
+## Important assumption
+
+The official names of the 3 cold-storage facilities + 1 warehouse are **not** conclusively mapped from the supplied spreadsheet. The MVP uses demo labels: Frigorífico 1/2/3 and Galpón.
 
 ## Scripts
 
-| Command | Description |
-|---------|-------------|
-| `bun dev` | Start the development server |
-| `bun dev:https` | Start the development server with HTTPS |
-| `bun build` | Build for production |
-| `bun start` | Start the production server |
-| `bun lint` | Run Biome |
-| `bun lint:fix` | Run Biome with fixes |
-| `bun format` | Format the codebase |
-| `bun typecheck` | Run TypeScript |
-| `bun analyze` | Analyze the Next.js bundle |
-
-## Project Structure
-
-```txt
-app/                 # App Router routes (user pages under app/[locale])
-components/          # UI primitives (components/ui) + layout + design-system
-lib/
-  config/site.ts     # ← site identity (edit this first)
-  hooks/
-  integrations/
-  scripts/
-  store/
-  styles/
-    index.css        # shadcn token layer (:root + .dark)
-    tokens.css       # brand palette, breakpoints, easings, utilities
-    global.css       # reset + app-wide global styles
-    fonts.ts         # font variables
-    cn.ts
-  utils/
-messages/            # next-intl translation catalogs
-```
-
-## Customizing
-
-### Identity
-
-All branding flows from [`lib/config/site.ts`](lib/config/site.ts) — it feeds page metadata, JSON-LD, the header/footer wordmark, and the Open Graph image. The user-facing copy (home title, metadata) lives in the `messages/*.json` catalogs.
-
-### Fonts
-
-Loaded via `next/font/google` in `app/layout.tsx` (`lib/styles/fonts.ts` holds the mono variable):
-
-| Role | Family | Token | Weights |
-|------|--------|-------|---------|
-| Sans (body) | Figtree | `--font-sans` | 300–700 |
-| Heading | Red Rose | `--font-heading` | 300–700 |
-| Mono | Geist Mono | `--font-mono` | variable |
-
-### Theme & colors
-
-- **Base color**: shadcn `neutral` (pure-gray scale), defined as OKLCH tokens in `lib/styles/index.css`.
-- **Primary**: olive/gold `oklch(0.6162 0.1258 86.69)`, with a monochromatic chart ramp on the same hue.
-- **Dark mode**: a single `.dark` class on `<html>` (toggled by `next-themes`); no `data-theme` attribute.
+| Script | Description |
+|--------|-------------|
+| `pnpm db:generate` | Generate Drizzle migrations |
+| `pnpm db:migrate` | Apply migrations |
+| `pnpm db:seed` | Load demo data |
+| `pnpm dev` | Start dev server |

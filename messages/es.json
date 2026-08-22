@@ -1,6 +1,10 @@
 {
   "common": { "skipToMain": "Saltar al contenido principal" },
-  "home": { "title": "App" },
+  "home": {
+    "title": "App",
+    "movementTitle": "Registrar movimiento",
+    "movementSubtitle": "Describí transferencias de stock en lenguaje natural"
+  },
   "theme": {
     "switchToLight": "Cambiar a tema claro",
     "switchToDark": "Cambiar a tema oscuro"

@@ -42,6 +42,9 @@ yarn-error.log*
 .unlighthouse/
 .turbo/
 
+# database
+data/
+
 # conductor
 .conductor/
 .context/

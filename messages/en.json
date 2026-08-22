@@ -1,6 +1,10 @@
 {
   "common": { "skipToMain": "Skip to main content" },
-  "home": { "title": "App" },
+  "home": {
+    "title": "App",
+    "movementTitle": "Register movement",
+    "movementSubtitle": "Describe stock transfers in natural language"
+  },
   "theme": {
     "switchToLight": "Switch to light theme",
     "switchToDark": "Switch to dark theme"
